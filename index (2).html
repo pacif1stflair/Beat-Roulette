@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Beat Roulette — колесо жанров</title>
+<style>
+  :root {
+    --bg: #0a0612;
+    --bg-glow: #2a1745;
+    --panel: #150d24;
+    --panel-hover: #1e1333;
+    --line: #2d1d4a;
+    --txt: #f3e8ff;
+    --dim: #9d8ec0;
+    --acc: #a855f7;
+    --acc-glow: rgba(168, 85, 247, 0.25);
+    --green: #10b981;
+    --green-glow: rgba(16, 185, 129, 0.25);
+    --red: #f43f5e;
+    --orange: #f97316;
+    --orange-glow: rgba(249, 115, 22, 0.3);
+    --tg: #2AABEE;
+    --width: 460px;
+  }
+
+  * { box-sizing: border-box; }
+  
+  body {
+    margin: 0; min-height: 100vh;
+    background: radial-gradient(circle at 50% -20%, var(--bg-glow), var(--bg) 70%);
+    background-attachment: fixed;
+    color: var(--txt);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex; justify-content: center; isolation: isolate;
+    transition: background 0.5s ease;
+  }
+
+  button { font: inherit; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  button:disabled { cursor: default; }
+  button:focus-visible, input:focus-visible { outline: 3px solid var(--acc); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+
+  .app {
+    display: grid; grid-template-columns: 280px 1fr; gap: 32px;
+    width: 100%; max-width: 900px; padding: 32px 16px; align-items: start;
+  }
+
+  .sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 32px; }
+
+  .logo {
+    font-size: 26px; font-weight: 800; letter-spacing: -0.03em; text-align: center;
+    background: linear-gradient(90deg, var(--acc), #f472b6);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin-bottom: 0px; transition: background 0.5s ease;
+  }
+
+  /* Кнопка Telegram */
+  .tg-login-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: rgba(42, 171, 238, 0.1); border: 1px solid rgba(42, 171, 238, 0.3);
+    color: #60c5f1; padding: 10px; border-radius: 12px; font-size: 14px; font-weight: 600;
+    transition: all 0.2s; width: 100%;
+  }
+  .tg-login-btn:hover { background: rgba(42, 171, 238, 0.2); box-shadow: 0 0 15px rgba(42, 171, 238, 0.2); }
+  .tg-login-btn svg { width: 18px; height: 18px; }
+
+  .hud { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  .hud-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .level-badge {
+    background: linear-gradient(135deg, var(--acc), #d946ef);
+    padding: 4px 10px; border-radius: 8px; font-size: 13px; font-weight: 800; color: #fff;
+    box-shadow: 0 0 15px var(--acc-glow); transition: all 0.5s ease;
+  }
+  .hud-stats { font-size: 12px; color: var(--dim); display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .hud-stats b { color: var(--txt); }
+  .xp-bar { height: 8px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+  .xp-fill { height: 100%; width: 100%; transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, var(--acc), #ec4899); transition: transform 0.4s ease, background 0.5s ease; box-shadow: 0 0 10px var(--acc-glow); }
+  .xp-text { font-size: 11px; color: var(--dim); text-align: right; }
+
+  .tabs { display: flex; flex-direction: column; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  .tab {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: transparent; border: 0;
+    color: var(--dim); font-size: 14px; font-weight: 600; border-radius: 10px; transition: all 0.2s; text-align: left; width: 100%;
+  }
+  .tab:hover:not(.active) { background: var(--panel-hover); color: var(--txt); }
+  .tab.active { background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2)); color: #fff; box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.3); }
+  .tab-count { background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 6px; font-size: 11px; margin-left: auto; }
+  .tab.active .tab-count { background: rgba(255,255,255,0.2); }
+
+  .main-content { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  .tab-panel { width: 100%; max-width: var(--width); animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* Колесо */
+  .wheel-wrap { position: relative; aspect-ratio: 1; width: 100%; margin-bottom: 24px; }
+  canvas { width: 100%; height: 100%; display: block; border-radius: 50%; box-shadow: 0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(168, 85, 247, 0.2); transition: box-shadow 0.5s ease; }
+  canvas.spinning { will-change: transform; }
+  .pointer { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); z-index: 3; border-left: 13px solid transparent; border-right: 13px solid transparent; border-top: 26px solid var(--red); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8)); }
+  .hub {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 27%; aspect-ratio: 1; border-radius: 50%; z-index: 2;
+    border: 3px solid rgba(255,255,255,0.15); background: linear-gradient(150deg, #2a1a40, #0d0618);
+    color: white; font-weight: 800; letter-spacing: 0.12em; font-size: clamp(12px, 3vw, 16px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); transition: transform 0.15s, opacity 0.2s, box-shadow 0.5s;
+  }
+  .hub:disabled { opacity: 0.5; }
+  .hub:active:not(:disabled) { transform: translate(-50%, -50%) scale(0.97); }
+  @media (hover: hover) { .hub:hover:not(:disabled) { transform: translate(-50%, -50%) scale(1.07); box-shadow: 0 0 20px var(--acc-glow), 0 10px 30px rgba(0,0,0,0.8); } }
+
+  .result { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative; overflow: hidden; }
+  .label { font-size: 11px; letter-spacing: 0.15em; color: var(--dim); text-transform: uppercase; margin-bottom: 6px; }
+  #genreName { font-size: clamp(22px, 6vw, 28px); font-weight: 800; background: linear-gradient(90deg, var(--acc), #f472b6); -webkit-background-clip: text; background-clip: text; color: transparent; margin: 0 0 18px; transition: background 0.5s ease; }
+  .cond-options, .btn-row { display: flex; flex-direction: column; gap: 10px; }
+  .cond-options { margin-bottom: 16px; }
+  .cond-btn { background: rgba(255,255,255,0.03); border: 1.5px solid var(--line); border-radius: 14px; padding: 14px; text-align: left; width: 100%; color: var(--txt); font-size: 14px; line-height: 1.45; display: flex; gap: 12px; align-items: flex-start; transition: all 0.2s; }
+  .cond-btn:active:not(:disabled) { transform: scale(0.985); }
+  .cond-num { flex: none; width: 24px; height: 24px; border-radius: 50%; background: rgba(168, 85, 247, 0.15); color: var(--acc); font-size: 11px; font-weight: 800; display: grid; place-items: center; margin-top: 1px; transition: all 0.2s; }
+  .cond-txt { flex: 1; }
+  .cond-btn.selected { border-color: var(--acc); background: rgba(168, 85, 247, 0.1); box-shadow: 0 0 0 3px var(--acc-glow); }
+  .cond-btn.selected .cond-num { background: var(--acc); color: #fff; }
+  .cond-btn.confirmed { border-color: var(--green); background: rgba(16, 185, 129, 0.1); box-shadow: 0 0 0 3px var(--green-glow); }
+  .cond-btn.confirmed .cond-num { background: var(--green); color: #fff; }
+  
+  /* Кнопки действий */
+  .done-btn { background: linear-gradient(135deg, #059669, #10b981); border: 0; color: #fff; padding: 14px 16px; border-radius: 12px; font-size: 15px; font-weight: 700; transition: all 0.2s; }
+  .done-btn:disabled { background: rgba(255,255,255,0.05); color: var(--dim); box-shadow: none; }
+  .done-btn:not(:disabled):hover { box-shadow: 0 0 15px var(--green-glow); }
+  
+  .finish-btn { background: linear-gradient(135deg, #ea580c, #f97316); border: 0; color: #fff; padding: 14px 16px; border-radius: 12px; font-size: 15px; font-weight: 700; transition: all 0.2s; margin-top: 10px; }
+  .finish-btn:not(:disabled):hover { box-shadow: 0 0 15px var(--orange-glow); }
+  .finish-btn:not(:disabled) { animation: pulseOrange 2s infinite; }
+  @keyframes pulseOrange { 0% { box-shadow: 0 0 0 0 var(--orange-glow); } 70% { box-shadow: 0 0 0 10px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+  .copy { background: transparent; border: 1px solid var(--line); color: var(--dim); padding: 10px 14px; border-radius: 12px; font-size: 13px; transition: all 0.2s; }
+  .copy:hover { border-color: var(--acc); color: var(--txt); }
+
+  .panel-header { font-size: 20px; font-weight: 800; margin: 0 0 16px; color: var(--txt); text-align: center; }
+  .panel-sub { font-size: 13px; color: var(--dim); text-align: center; margin: -8px 0 20px; }
+
+  /* Лидерборд */
+  .leaderboard-podium { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin-bottom: 24px; padding: 0 10px; }
+  .podium-item { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .podium-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--panel-hover); border: 2px solid var(--line); display: grid; place-items: center; font-size: 20px; font-weight: 800; color: var(--dim); margin-bottom: 8px; }
+  .podium-item.rank-1 .podium-avatar { width: 60px; height: 60px; border-color: #fbbf24; box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+  .podium-item.rank-2 .podium-avatar { border-color: #9ca3af; color: #e5e7eb; }
+  .podium-item.rank-3 .podium-avatar { border-color: #b45309; color: #d97706; }
+  .podium-name { font-size: 12px; font-weight: 600; text-align: center; margin-bottom: 4px; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .podium-xp { font-size: 11px; color: var(--acc); font-weight: 700; }
+  .podium-block { width: 100%; background: var(--panel); border: 1px solid var(--line); border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center; font-weight: 800; font-size: 18px; padding-top: 8px; margin-top: 8px; }
+  .rank-1 .podium-block { height: 70px; background: linear-gradient(to top, rgba(251, 191, 36, 0.1), var(--panel)); border-color: rgba(251, 191, 36, 0.3); color: #fbbf24; }
+  .rank-2 .podium-block { height: 50px; background: linear-gradient(to top, rgba(156, 163, 175, 0.1), var(--panel)); border-color: rgba(156, 163, 175, 0.3); color: #9ca3af; }
+  .rank-3 .podium-block { height: 40px; background: linear-gradient(to top, rgba(180, 83, 9, 0.1), var(--panel)); border-color: rgba(180, 83, 9, 0.3); color: #d97706; }
+
+  .leaderboard-list { display: flex; flex-direction: column; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 10px; }
+  .lb-row { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 10px; transition: background 0.2s; }
+  .lb-row:hover { background: rgba(255,255,255,0.03); }
+  .lb-row.is-me { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); }
+  .lb-rank { width: 20px; font-size: 13px; font-weight: 700; color: var(--dim); text-align: center; }
+  .lb-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--panel-hover); display: grid; place-items: center; font-size: 14px; font-weight: 800; color: var(--acc); }
+  .lb-info { flex: 1; display: flex; flex-direction: column; }
+  .lb-name { font-size: 14px; font-weight: 600; }
+  .lb-lvl { font-size: 11px; color: var(--dim); }
+  .lb-xp { font-size: 13px; font-weight: 700; color: var(--acc); }
+
+  /* Сетка значков */
+  .badges-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; min-height: 320px; align-content: start; }
+  @media (min-width: 420px) { .badges-grid { grid-template-columns: repeat(3, 1fr); } }
+  .badge { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 8px 12px; text-align: center; color: var(--txt); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; }
+  .badge.unlocked { background: linear-gradient(160deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.05)); border-color: rgba(168, 85, 247, 0.4); }
+  .badge.locked { opacity: 0.6; }
+  .badge-icon { width: 24px; height: 24px; margin-bottom: 10px; color: var(--acc); display: flex; align-items: center; justify-content: center; transition: color 0.5s; }
+  .badge-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 6px var(--acc-glow)); }
+  .badge.unlocked .badge-icon { color: #e879f9; }
+  .badge.unlocked .badge-icon svg { filter: drop-shadow(0 0 10px rgba(232, 121, 249, 0.6)); }
+  .badge-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; line-height: 1.2; }
+  .badge-xp { font-size: 10px; color: var(--dim); font-weight: 600; }
+  .badge.unlocked .badge-xp { color: #34d399; }
+
+  .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 24px; }
+  .page-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid var(--line); color: var(--dim); font-size: 14px; font-weight: 700; display: grid; place-items: center; transition: all 0.2s; }
+  .page-btn:hover:not(.active) { background: rgba(255,255,255,0.08); color: var(--txt); }
+  .page-btn.active { background: var(--acc); color: white; border-color: var(--acc); box-shadow: 0 0 15px var(--acc-glow); transform: scale(1.1); }
+
+  .history-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .history-list li { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
+  .history-list li.done { border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); }
+  .h-head { display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-bottom: 4px; }
+  .history-list b { color: var(--acc); transition: color 0.5s; }
+  .history-list .condition { color: var(--dim); }
+  .history-list .chosen { color: #34d399; font-weight: 600; }
+  .history-list .check { color: #34d399; font-size: 12px; font-weight: 700; }
+  .empty { text-align: center; color: var(--dim); padding: 20px; }
+
+  /* Вкладка Автор */
+  .author-card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  .author-avatar { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 16px; background: linear-gradient(135deg, var(--acc), #ec4899); display: grid; place-items: center; font-size: 32px; font-weight: 800; color: white; box-shadow: 0 0 20px var(--acc-glow); }
+  .author-name { font-size: 24px; font-weight: 800; text-align: center; margin: 0 0 4px; color: var(--txt); }
+  .author-role { font-size: 13px; color: var(--acc); text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+  .author-text { font-size: 14px; color: var(--dim); line-height: 1.6; margin-bottom: 16px; }
+  .author-text b { color: var(--txt); font-weight: 600; }
+  .author-quote { background: rgba(255,255,255,0.03); border-left: 3px solid var(--acc); padding: 12px 16px; border-radius: 0 12px 12px 0; font-style: italic; color: var(--txt); margin: 20px 0; }
+
+  /* Кнопка Доната */
+  .donate-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border: none; color: #1c1917; font-size: 15px; font-weight: 800;
+    padding: 14px 20px; border-radius: 12px; width: 100%; margin-top: 24px;
+    cursor: pointer; transition: all 0.2s ease; text-decoration: none;
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+  }
+  .donate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.5);
+    background: linear-gradient(135deg, #fcd34d, #fbbf24);
+  }
+  .donate-btn svg { width: 20px; height: 20px; }
+
+  /* Настройки */
+  .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .setting-row:last-of-type { border-bottom: 0; }
+  .setting-label { font-size: 15px; font-weight: 600; color: var(--txt); }
+  .setting-desc { font-size: 12px; color: var(--dim); margin-top: 4px; line-height: 1.4; }
+  
+  .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; cursor: pointer; inset: 0; background-color: rgba(255,255,255,0.1); transition: .3s; border-radius: 34px; }
+  .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
+  input:checked + .slider { background-color: var(--acc); box-shadow: 0 0 10px var(--acc-glow); }
+  input:checked + .slider:before { transform: translateX(22px); }
+
+  .segmented-control { display: flex; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 4px; gap: 4px; margin-top: 10px; }
+  .segmented-control button { flex: 1; background: transparent; border: 0; color: var(--dim); padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+  .segmented-control button.active { background: var(--acc); color: white; box-shadow: 0 2px 10px var(--acc-glow); }
+
+  .color-picker { display: flex; gap: 10px; margin-top: 10px; }
+  .color-dot { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform 0.2s; }
+  .color-dot:hover { transform: scale(1.1); }
+  .color-dot.active { border-color: white; box-shadow: 0 0 10px currentColor; transform: scale(1.1); }
+  .color-purple { background: #a855f7; color: #a855f7; }
+  .color-cyan { background: #06b6d4; color: #06b6d4; }
+  .color-rose { background: #f43f5e; color: #f43f5e; }
+  .color-emerald { background: #10b981; color: #10b981; }
+
+  .reset-button { background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3); color: #fb7185; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600; width: 100%; transition: all 0.2s; margin-top: 20px; }
+  .reset-button:hover { background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.5); }
+
+  dialog { background: var(--panel); color: var(--txt); border: 1px solid var(--line); border-radius: 20px; padding: 26px 22px; width: min(340px, calc(100% - 32px)); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+  dialog::backdrop { background: rgba(10, 5, 20, 0.8); backdrop-filter: blur(4px); }
+  .modal-close { position: absolute; top: 8px; right: 10px; background: none; border: 0; color: var(--dim); font-size: 26px; line-height: 1; padding: 4px 10px; }
+  .modal-icon { width: 56px; height: 56px; margin: 0 auto 16px; color: #e879f9; display: flex; align-items: center; justify-content: center; }
+  .modal-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 15px rgba(232, 121, 249, 0.5)); }
+  .modal-name { font-size: 20px; font-weight: 800; margin: 0 0 6px; }
+  .modal-desc { font-size: 14px; color: var(--dim); margin: 0 0 20px; line-height: 1.4; }
+  .modal-progress-bar { height: 10px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+  .modal-progress-fill { height: 100%; width: 100%; transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, var(--acc), #ec4899); transition: transform 0.4s, background 0.5s; }
+  .modal-progress-fill.done { background: linear-gradient(90deg, #059669, #10b981); }
+  .modal-progress-text { font-size: 13px; color: var(--dim); font-weight: 600; margin-bottom: 16px; }
+  .modal-xp { display: inline-block; padding: 6px 14px; border-radius: 10px; background: rgba(168, 85, 247, 0.15); color: var(--acc); font-weight: 700; font-size: 14px; transition: color 0.5s, background 0.5s; }
+  .modal-xp.done { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+  /* Модалка загрузки */
+  .upload-area { 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; 
+    width: 100%; border: 2px dashed var(--line); border-radius: 12px; 
+    padding: 24px 20px; text-align: center; margin-bottom: 16px; cursor: pointer; transition: all 0.2s; 
+  }
+  .upload-area:hover { border-color: var(--acc); background: rgba(168, 85, 247, 0.05); }
+  .upload-area svg { width: 32px; height: 32px; color: var(--green); margin-bottom: 8px; flex-shrink: 0; }
+  .upload-text { font-size: 13px; color: var(--dim); }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 100px); background: var(--panel-hover); border: 1px solid var(--acc); padding: 12px 24px; border-radius: 99px; font-size: 14px; font-weight: 600; z-index: 100; pointer-events: none; transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2); opacity: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px var(--acc-glow); max-width: 90vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+  @media (max-width: 768px) {
+    .app { display: flex; flex-direction: column; gap: 16px; padding: 16px 16px 80px; max-width: 500px; margin: 0 auto; }
+    .sidebar { position: static; width: 100%; gap: 12px; }
+    .logo { font-size: 24px; margin-bottom: 4px; }
+    .tabs { flex-direction: row; overflow-x: auto; scrollbar-width: none; padding: 4px; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { padding: 8px 12px; white-space: nowrap; justify-content: center; }
+    .tab-count { display: none; }
+    .main-content { width: 100%; }
+    .tab-panel { max-width: 100%; }
+    .leaderboard-podium { gap: 4px; padding: 0; }
+    .podium-name { font-size: 11px; max-width: 60px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">🎛 Beat Roulette</div>
+    
+    <button type="button" class="tg-login-btn" id="mockTgBtn">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      Войти через Telegram
+    </button>
+
+    <section class="hud" aria-label="Прогресс">
+      <div class="hud-top">
+        <span class="level-badge" id="lvlBadge">LVL 1</span>
+        <div class="hud-stats">
+          <span title="Дни">🔥 <b id="statStreak">0</b></span>
+          <span title="Спины">🎰 <b id="statSpins">0</b></span>
+          <span title="Биты">🎵 <b id="statBeats">0</b></span>
+        </div>
+      </div>
+      <div class="xp-bar" id="xpBar" role="progressbar" aria-label="Опыт" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="xp-fill" id="xpFill"></div></div>
+      <div class="xp-text" id="xpText">0 / 100 XP</div>
+    </section>
+
+    <nav class="tabs" role="tablist">
+      <button type="button" class="tab active" data-tab="play" id="tab-play" role="tab" aria-selected="true">🎰 Колесо</button>
+      <button type="button" class="tab" data-tab="leaderboard" id="tab-leaderboard" role="tab" aria-selected="false">🏆 Топ</button>
+      <button type="button" class="tab" data-tab="badges" id="tab-badges" role="tab" aria-selected="false">🏅 Значки <span class="tab-count" id="tabBadgeCount">0/0</span></button>
+      <button type="button" class="tab" data-tab="history" id="tab-history" role="tab" aria-selected="false">📜 История <span class="tab-count" id="tabHistCount">0</span></button>
+      <button type="button" class="tab" data-tab="about" id="tab-about" role="tab" aria-selected="false">👤 Автор</button>
+      <button type="button" class="tab" data-tab="settings" id="tab-settings" role="tab" aria-selected="false">⚙️ Параметры</button>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <section class="tab-panel" id="panel-play" data-panel="play" role="tabpanel">
+      <div class="wheel-wrap" id="wheelWrap">
+        <div class="pointer" aria-hidden="true"></div>
+        <canvas id="wheel" role="img" aria-label="Колесо жанров">Нажми SPIN</canvas>
+        <button type="button" id="spinBtn" class="hub" aria-label="Крутить">SPIN</button>
+      </div>
+
+      <section class="result" id="result" aria-labelledby="genreName" hidden>
+        <div class="label">Твой жанр</div>
+        <h2 id="genreName">—</h2>
+        <div class="label" id="conditionLabel">Выбери условие</div>
+        <div class="cond-options" role="group">
+          <button type="button" class="cond-btn" id="condBtn0" aria-pressed="false"><span class="cond-num">1</span><span class="cond-txt" id="condText0">—</span></button>
+          <button type="button" class="cond-btn" id="condBtn1" aria-pressed="false"><span class="cond-num">2</span><span class="cond-txt" id="condText1">—</span></button>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="done-btn" id="doneBtn" disabled>Выбери условие выше</button>
+          <button type="button" class="finish-btn" id="finishBtn" hidden>🔥 Бит готов (+50 XP)</button>
+          <button type="button" class="copy" id="copyBtn">Скопировать задание</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- ЛИДЕРБОРД -->
+    <section class="tab-panel" id="panel-leaderboard" data-panel="leaderboard" hidden>
+      <h2 class="panel-header">🏆 Топ битмейкеров</h2>
+      <p class="panel-sub">Демо-версия лидерборда</p>
+      
+      <div class="leaderboard-podium" id="podium">
+        <!-- Заполняется через JS -->
+      </div>
+      <div class="leaderboard-list" id="lbList">
+        <!-- Заполняется через JS -->
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-badges" data-panel="badges" hidden>
+      <h2 class="panel-header">🏅 Все значки</h2>
+      <p class="panel-sub">Нажми на значок, чтобы увидеть прогресс</p>
+      <div class="badges-grid" id="badgesGrid"></div>
+      <div class="pagination" id="pagination"></div>
+    </section>
+
+    <section class="tab-panel" id="panel-history" data-panel="history" hidden>
+      <h2 class="panel-header">📜 История спинов</h2>
+      <ul class="history-list" id="historyList"></ul>
+    </section>
+
+    <section class="tab-panel" id="panel-about" data-panel="about" hidden>
+      <h2 class="panel-header">👤 Об авторе</h2>
+      <div class="author-card">
+        <div class="author-avatar">🎧</div>
+        <h3 class="author-name">pacif1st</h3>
+        <div class="author-role">Beatmaker & Vibe Coder</div>
+        
+        <p class="author-text">Этот проект — результат одиночного эксперимента в мире <b>вайбкодинга</b>. Один разработчик, один ИИ-ассистент и чистое желание сделать что-то крутое.</p>
+        
+        <p class="author-text">Beat Roulette создан, чтобы <b>разнообразить написание музыки</b>. Когда замыливается глаз или заканчиваются идеи — колесо всегда придёт на помощь.</p>
+        
+        <div class="author-quote">
+          «Если тебе скучно — просто порандомить, что написать. Рандом решает.»
+        </div>
+        
+        <p class="author-text" style="text-align:center; font-size:12px; margin-top:24px; margin-bottom:0;">
+          Связаться со мной: <a href="#" style="color:var(--acc); text-decoration:none;">Telegram</a> • <a href="#" style="color:var(--acc); text-decoration:none;">SoundCloud</a>
+        </p>
+
+        <!-- Кнопка доната -->
+        <button type="button" class="donate-btn" id="donateBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+          Угостить автора кофе
+        </button>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-settings" data-panel="settings" hidden>
+      <h2 class="panel-header">⚙️ Параметры</h2>
+      <div class="result" style="padding: 10px 20px;">
+        
+        <div class="setting-row" style="flex-direction: column; align-items: stretch; padding-bottom: 20px;">
+          <div>
+            <div class="setting-label">Режим сложности</div>
+            <div class="setting-desc">Какие условия выпадут на колесе</div>
+          </div>
+          <div class="segmented-control" id="difficultyControl">
+            <button type="button" data-diff="easy">Easy</button>
+            <button type="button" data-diff="mix" class="active">Микс</button>
+            <button type="button" data-diff="hard">Hard</button>
+          </div>
+        </div>
+
+        <div class="setting-row" style="flex-direction: column; align-items: stretch; padding-bottom: 20px;">
+          <div>
+            <div class="setting-label">Цветовой акцент</div>
+            <div class="setting-desc">Смени неоновую подсветку интерфейса и фона</div>
+          </div>
+          <div class="color-picker" id="themeControl">
+            <button type="button" class="color-dot color-purple active" data-theme="purple" aria-label="Фиолетовый"></button>
+            <button type="button" class="color-dot color-cyan" data-theme="cyan" aria-label="Бирюзовый"></button>
+            <button type="button" class="color-dot color-rose" data-theme="rose" aria-label="Розовый"></button>
+            <button type="button" class="color-dot color-emerald" data-theme="emerald" aria-label="Изумрудный"></button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Звуковые эффекты</div>
+            <div class="setting-desc">Тиканье колеса и звук победы</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="soundToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Виброотклик</div>
+            <div class="setting-desc">Вибрация при кликах (только на телефонах)</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="hapticsToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button type="button" class="reset-button" id="resetBtn">Сбросить весь прогресс</button>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Модалка Значка -->
+<dialog id="badgeDialog">
+  <button type="button" class="modal-close" id="modalClose" aria-label="Закрыть">×</button>
+  <div class="modal-icon" id="modalIcon"></div>
+  <h2 class="modal-name" id="modalName"></h2>
+  <p class="modal-desc" id="modalDesc"></p>
+  <div class="modal-progress-bar"><div class="modal-progress-fill" id="modalProgressFill"></div></div>
+  <div class="modal-progress-text" id="modalProgressText"></div>
+  <div class="modal-xp" id="modalXp"></div>
+</dialog>
+
+<!-- Модалка Загрузки Бита -->
+<dialog id="uploadDialog">
+  <button type="button" class="modal-close" id="uploadClose" aria-label="Закрыть">×</button>
+  <h2 class="modal-name" style="margin-bottom: 12px;">Проверка бита</h2>
+  <p class="modal-desc">Чтобы получить XP и попасть в топ, прикрепи короткий отрывок (15-30 сек) своего бита.</p>
+  
+  <label class="upload-area" for="audioFile">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+    <div class="upload-text" id="fileName">Нажми, чтобы выбрать MP3/WAV</div>
+  </label>
+  <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+  
+  <div class="btn-row">
+    <button type="button" class="done-btn" id="confirmUpload" disabled>Отправить на проверку</button>
+  </div>
+</dialog>
+
+<noscript>Для работы колеса включи JavaScript.</noscript>
+
+<script>
+'use strict';
+
+/* ==========================================================
+   ДАННЫЕ
+   ========================================================== */
+const GENRES = [
+  { name:'Trap',
+    easy:['BPM 140, клэп на 3-ю долю — классический half-time','808 с длинным хвостом — он же бас, отдельного баса нет','Хэты восьмыми + один ролл в конце каждого 4-го такта','Мелодия на одном инструменте: колокольчики или флейта','Всего 4 аккорда на весь бит, по такту на каждый','Кик всегда совпадает с нотой 808','Оркестровый стаб (брасс или струнные) на заходе хука','Интро 4 такта без барабанов, потом всё заходит разом','Не больше одного открытого хэта на такт','Минор, мелодия укладывается в одну октаву','Структура: интро 8 — хук 16 — куплет 16 — хук 16','Продюсерский тег в первых 4 тактах'],
+    hard:['Стиль Lex Luger: брасс + струнные + хэты-триоли, 808 без слайдов','Роллы только триолями (1/12 и 1/24), никаких 1/32','Главная мелодия — твой голос, запитченный в инструмент','808 играет мелодию: минимум 5 разных нот в паттерне','Паттерн хэтов меняется каждые 8 тактов — ни одного повтора','Бит-свитч на середине: новые барабаны и новая мелодия','BPM 150+, но бит должен звучать спокойно','Без снейра — только клэп, раскиданный по панораме','Мелодия в мажоре, но бит звучит мрачно','Хук модулирует на полтона вверх','Не больше 3 мелодических дорожек на весь бит','Всё в моно, кроме одного элемента — он широкий']},
+  { name:'Drill',
+    easy:['BPM 142, хэты по схеме 3+3+2','808 со слайдами — минимум 2 глайда за 4 такта','Тёмная мелодия на пианино в миноре','Главная мелодия — струнные пиццикато','Отдельного кика нет — бьёт только 808','Мелодия из 4 нот, повторяется весь бит','Хор или вокал-пэд на фоне','Гармонический минор: повышенная VII ступень в мелодии','Колокольчик как вторая мелодия, как в Chicago drill','Первые 4 такта мелодия под low-pass фильтром','Crash-тарелка в начале каждого 8-тактового блока','Ударные: только хэт, снейр и римшот'],
+    hard:['Brooklyn drill: чоп чужого R&B-хука + 808 с дисторшном','Bronx drill: только сэмпл соул/R&B-пластинки, никаких синтов','808 слайдит на каждой ноте — ни одной ноты без глайда','Ни одного хэт-ролла — грув только на расстановке снейров','Мелодия в мажоре, но звучит угрожающе','Chicago drill: синт-брасс, колокола и плотные снейр-паттерны','BPM 150+, а 808 играет всего 2 ноты','Без пианино и струнных — мелодия только из синта или вокала','Две независимые мелодии, ни одна не дублирует другую','Снейр-паттерн меняется каждый 4-й такт','Мелодия в размере 3/4 поверх drill-барабанов','Бит-свитч на втором куплете в новую тональность']},
+  { name:'Boom Bap',
+    easy:['BPM 90: кик на 1 и 3, снейр на 2 и 4','Свинг 55–60% на хэтах','Основа — сэмпл соул- или джаз-пластинки','Только акустические барабаны — никаких 808','Шейкер или тамбурин восьмыми','Барабаны — самое громкое в миксе','Луп из 2 тактов на весь куплет','Винил-треск поверх сэмпла','Скретч в конце каждого 8-тактового блока','Бас — сэмпл бас-гитары или контрабаса','Хук собран из вокальной фразы другого трека','Бас отрезан фильтром от сэмпла и сыгран отдельно'],
+    hard:['Сэмпл порезан минимум на 8 кусков и переигран в новом порядке','Барабаны без квантайза, пальцами, как у J Dilla','Стиль SP-1200: сэмпл ужат до 12 бит','Сэмпл из жанра, который ты вообще не слушаешь','Стиль DJ Premier: хук только из скретчей вокальных фраз','Все барабаны из одного брейка — без отдельных сэмплов','BPM 80, но качать должно как на 95','Две разные пластинки в одном лупе, в одной тональности','Ни одного сэмпла: всё сыграно, но звучит как пластинка','Каждые 4 такта новый чоп сэмпла','Кик и снейр из одного звука, разведены питчем','Бас только на сильных долях, мелодия — только на слабых']},
+  { name:'Lo-Fi',
+    easy:['BPM 75–85, свинг на барабанах','Только септаккорды: maj7 и m7','Винил-треск на весь бит','Low-pass на мастере около 8–10 кГц','Главный инструмент — Rhodes или электропиано','Мягкий кик и снейр щёточками','Аккорды «качаются» сайдчейном от кика','Фраза из старого мультика или фильма как вокал-сэмпл','Звук дождя или улицы на фоне','Бас — мягкий саб или контрабас','Ленточная сатурация на мастере','Гармония на связке ii–V–I'],
+    hard:['Сэмпл из саундтрека старой видеоигры','Wow & flutter: аккорды плавают по питчу, как на кассете','Только 9-е и 11-е аккорды — ни одного простого трезвучия','Одна партия записана на диктофон телефона','Не больше 3 дорожек на весь бит','Барабаны из бытовых звуков: стол, ключи, кружка','Мелодия — импровизация одним дублем без правок','Без ударных: грув только от баса и аккордов','Модуляция в другую тональность на середине','Аккорды сдвинуты с сетки вручную, до 30 мс','Бит длиной 1:30, лупится без слышного шва','BPM 70, но без пауз — бит должен «течь»']},
+  { name:'Phonk',
+    easy:['Мелодия на ковбелле TR-808','Вокал-сэмпл в стиле мемфис-рэпа 90-х','808 в перегрузе','BPM 130–145','Кассетная грязь на мастере','Хэты триолями','Жёсткий цифровой снейр, как в Memphis','Повторяющийся вокальный хук из 1–2 слов','Минор, мелодия из 3–4 нот','Саб-бас качает на каждой доле','Тёмный пэд или хор на фоне','Интро только с вокалом, потом резкий дроп'],
+    hard:['Drift phonk: ковбелл-мелодия на 2 октавы, BPM 160+','Бразильский фонк: ритм фанк-кариоки + ковбелл','Сэмпл из саундтрека хоррор-фильма','Вокал замедлен и запитчен вниз до неузнаваемости','Ковбелл и 808 играют одни и те же ноты в унисон','Дисторшн на весь микс, но вокал остаётся разборчивым','Ни одного ковбелла — фонк-вайб только от сэмплов и 808','Два ковбелла перекликаются (вопрос — ответ)','Мелодия в мажоре, но звучит зловеще','Ковбелл меняет паттерн каждые 8 тактов','Весь бит только из звуков TR-808','4 такта брейка посередине: только вокал и ковбелл']},
+  { name:'Detroit',
+    easy:['BPM около 100 с прыгающим грувом','Пианино с «прыгающей», ломаной мелодией','808 прыгает по октавам','Клэпы вместо снейра','Редкие хэты, без роллов','Мелодия из 2–3 нот по кругу','Ударные: только кик, клэп и хэт','Бас играет больше нот, чем мелодия','Тёмная минорная гармония','Колокольчик в мелодии','Синкопированный кик мимо сильных долей','Один 4-тактовый луп на весь бит'],
+    hard:['Клэп ни разу не попадает на 2 и 4','Пианино чуть расстроено — «нарочно криво»','Только пианино и 808, больше ничего','Ни одного хэта','Мелодия сыграна с ошибками — оставь их','808 и пианино в разных ритмах','Детройтский bounce в дабл-тайме, BPM 190+','Сэмпл старого детройтского соула в духе Motown','Каждый такт мелодии чуть отличается от прошлого','Ни одного эффекта: ни реверба, ни дилея','Ковбелл и пианино в унисон','808 слайдит вниз в конце каждой фразы']},
+  { name:'Jersey Club',
+    easy:['BPM 140, фирменная серия из 5 киков в конце такта','Скрип кровати (bed squeak) как перкуссия','Вокал-чоп повторяется минимум 4 раза подряд','В барабанах брейк из «Think (About It)» Lyn Collins','Сэмпл поп-хита, порезанный по слогам','Короткие стаккато-ноты 808','Кики в тресильо (3+3+2)','Открытые хэты на офбитах','Акцент криком или «хэй!» каждые 2 такта','Мелодия из одного синт-стаба','Структура: интро — дроп — брейк — дроп','Без сложных аккордов'],
+    hard:['Ремикс: возьми R&B-трек и переделай его в Jersey club','Все чопы только из твоего голоса','Кик-паттерн меняется каждые 4 такта','Без bed squeak — замени его бытовым звуком','Триольные кики поверх прямых хэтов','Вокал-чоп запитчен по нотам и играет мелодию','Сэмпл из аниме или видеоигры','Мелодии нет — только чопы и барабаны','Брейк на 8 тактов в половинном темпе','Не больше 3 типов SFX-звуков как перкуссии','Каждые 8 тактов заходит новый элемент','Бит в мажоре, максимально весёлый и танцевальный']},
+  { name:'Rage',
+    easy:['Супер-сау лид, широко растянутый в стерео','808 с дисторшном','BPM 150–165','Простые энергичные трэп-барабаны','Короткая синт-петля на 2 такта','Мелодия в мажоре','Хэты ровными восьмыми','Колокола сверху, как у Yeat','Синты качаются сайдчейном от кика','EDM-пэд на мажорных аккордах','Ривёрс-эффект перед каждым хуком','4 такта тишины перед первым дропом'],
+    hard:['Лид в стиле 8-бит, как саундтрек видеоигры','EDM-гитарная петля, переигранная синтом','808 играет мелодию в унисон с лидом','Не больше 2 синтов на весь бит','Мелодия только из арпеджио шестнадцатыми','BPM 170+ и ни одного хэт-ролла','На каждом хуке новый лид','Дисторшн на всём, кроме лида','Хоровые вокал-чопы с жёстким автотюном','Минор, но звучит как праздник','Хаотичный бит с резкими стопами, как у F1lthy','Без 808 — бас из Reese-синта']},
+  { name:'Plugg',
+    easy:['Почти без хэтов — вместо них crash и пропуски','Мягкий мечтательный синт-пэд','Толстый ровный 808','Акцентные снейры на полдолях','Свинг на барабанах, как у Zaytoven','Всего 2–3 простых аккорда','Повторяющаяся прилипчивая мелодия','Колокольчики сверху','BPM 140–155','Никакого дисторшна','Мелодия в мажоре','Пропуск барабанов на последней доле такта'],
+    hard:['Пианино как у Zaytoven: беглые триоли в мелодии','Весь бит на пресетах одного синта','Ни одного хэта вообще','808 играет одну ноту — грув только от пропусков','Мелодия с джазовыми нонами','Синт с видеоигровым тембром','Мелодия сыграна вживую, без квантайза','Без снейра: только кик, crash и 808','Две мелодии в разных октавах переплетаются','Hyperplugg: всё питчем вверх, BPM 170','Звучит как космос: только пэды и колокольчики','Каждые 8 тактов новый пропуск барабанов']},
+  { name:'Hyperpop',
+    easy:['Пищащий синт-лид с питчем вверх','Вокал-чоп с автотюном на максимум','Металлическая перкуссия','BPM 150–170','Перегруз на мастере','Мелодия в духе поп-хитов 2000-х','Гличи на всех переходах','Бит короче 2 минут','Мажор и «сладкие» аккорды','Кик с дисторшном','Аккорды на супер-сау','Сайдчейн на 100% — бит «дышит»'],
+    hard:['Dariacore: ускоренный и порезанный сэмпл известного хита','Bitcrush на всём, кроме кика','Смена темпа на середине трека','Второй дроп внезапно уходит в DnB','Вокал только из синтезатора речи (TTS)','Инструменты только из бытовых звуков','Тональность меняется каждые 8 тактов','Каждые 4 такта новый ритм','Поп-панк-гитара в хуке','Такт тишины + ривёрс перед дропом','Мелодия из звуков уведомлений','Голос запитчен до мультяшного и сыгран как инструмент']},
+  { name:'Afrobeats',
+    easy:['BPM 100–110','Шейкер шестнадцатыми весь бит','Конги и бонги','Мелодия на калимбе или маримбе','Хайлайф-гитара','Кик по схеме 3+3+2','Мягкий пэд на аккордах','Круглый мягкий бас','Римшот на синкопах','Флейта в хуке','Солнечная мажорная гармония','4 такта перкуссионного брейка'],
+    hard:['Вставка из амапиано: log drum вместо баса','Говорящий барабан (talking drum) в грув','Только живая или записанная тобой перкуссия','Полиритмия 3 против 2','Брасс-секция в стиле Fela Kuti','Госпел-хор на хуке','Ни одного синта','Гибрид с drill: хэты 3+3+2 и слайды 808','Ксилофон и гитара переплетают мелодии','Кик ни разу не бьёт на первую долю','Перкуссия меняется каждые 8 тактов','Бас в тресильо, кик ровный']},
+  { name:'Reggaeton',
+    easy:['BPM 90–96, классический dembow','Кик на каждую долю','Снейр и тимбал в тресильо','Латинская гитара','Синт-пэд в миноре','Бас идёт за киком','Мелодия из 4 нот','Гуиро или маракасы','Брасс-стаб в хуке','Хэты восьмыми','Сайдчейн пэда от кика','Структура: интро 4 — хук 8 — куплет 16'],
+    hard:['Минималистичный dembow, как в «Te Boté»','Снейр в dembow заменён звуком голоса','Пианино-монтуно в стиле сальсы','Гитара в стиле бачаты','Перрео на 110+ BPM','Вся перкуссия только из тимбалов','Moombahton: 108 BPM и хаусовые синты','Dembow варьируется каждые 8 тактов','Сэмпл классического ямайского риддима','Без 808 — бас только синтом','Летний мажор, но без гитары','4 такта брейка — только перкуссия']},
+  { name:'Drum & Bass',
+    easy:['BPM 174, two-step: кик на 1 и «3+», снейр на 2 и 4','Reese-бас с детюном','Амен-брейк в барабанах','Хэты шестнадцатыми','Пэд на аккордах','Liquid: пиано и соул-вокал','Простой чистый саб-бас','Интро 16 тактов без баса','Ривёрс-крэш перед дропом','Брейкдаун на 16 тактов','Эмбиент-мелодия сверху','Дроп ровно через 32 такта'],
+    hard:['Jungle: амен порезан на 16-е и переставлен','Neurofunk: тембр баса меняется каждый такт','Halftime: 174 BPM, но барабаны как на 87','Ragga-вокал-сэмпл','Два брейка слоями друг на друге','Только Reese — без отдельного саба','Второй дроп в другой тональности','Сэмпл из джазовой пластинки','Брейк запитчен вниз на 3+ полутона','Каждые 8 тактов новый брейк','Ни одного кика вне брейка','Мелодия без тональности — только текстуры']},
+  { name:'UK Garage',
+    easy:['BPM 132, 2-step: кик пропускает доли','Шаффл на хэтах','Вокал-чоп с питчем','Органный бас','Римшоты и вудблоки','Клэп на 2 и 4','R&B-аккорды','Глубокий саб-бас','Женский вокал-сэмпл','Синт-стабы на офбитах','Свинг на перкуссии','Сайдчейн аккордов'],
+    hard:['Speed garage: прямая бочка + воббл-бас','Как у Todd Edwards: вокал порезан на десятки мелких чопов','Бас с дисторшном и резонансом','Элементы грайма: квадратные синты, 140 в половину','Без хэтов — грув только на перкуссии','Вокал-чопы играют аккорды','Хаус-пиано в хуке','Bassline house: прыгающий бас 16-ми','Свинг 66% на всём','Кик-паттерн меняется каждый 4-й такт','Только сэмплы, ни одного синта','Мужской вокал, запитченный в женский']},
+  { name:'Dark Trap',
+    easy:['BPM 138, 808 максимально низкий и грязный','Колокол или хор в мелодии','Хэты ровными восьмыми, без роллов','Мрачная мелодия в миноре','Длинный реверб на снейре','Пэд с низким фильтром','808 с перегрузом','Шёпот или вздох как вокал-сэмпл','Мелодия из 3 нот','Интро только с атмосферой, 8 тактов','Без мажорных аккордов','Глухой кик с хвостом'],
+    hard:['Сэмпл из саундтрека хоррор-фильма','Мелодия на расстроенном пианино','Тритоны в мелодии','Ни одного синта — только сэмплы','Тишина на целый такт перед хуком','808 играет хроматические ходы','Скрипки в стиле хоррора (кластеры)','Без снейра — только клэп с реверсом','Вокал-сэмпл задом наперёд','Звуки природы: ветер, вороны','Бит меняет темп на 2/3 в бридже','Мелодия из 2 нот на полтона друг от друга']},
+  { name:'Pluggnb',
+    easy:['Plugg-синт + R&B-аккорды','Мягкий 808 без клиппинга','Снейр с реверберацией и лёгким свингом','BPM 145–155','Аккорды с maj7 и maj9','Мечтательная мелодия на синт-пэде','Вокал-чоп с автотюном','Хэты редкие, без роллов','Гитара с хорусом','Мажорная гармония','Колокольчики сверху','Пропуск барабанов перед хуком'],
+    hard:['Две разные тональности одновременно','Аккорды сыграны вживую, без квантайза','Мелодия на электрогитаре с вибрато','Только пэды и 808 — больше ничего','Голос запитчен вниз до баритона','Каждые 8 тактов новая прогрессия','Без снейра — только клэп с длинным хвостом','Аккорды с 11-й и 13-й ступенями','R&B-сэмпл 2000-х, перевёрнутый задом','Бит без хэтов совсем','Мелодия на фортепиано, как в R&B 90-х','BPM 75, но звучит как 150']}
+];
+
+const COLORS = ['#7c3aed','#db2777','#ea580c','#ca8a04','#16a34a','#0891b2','#2563eb','#9333ea'];
+const GENRE_INDEX = new Map(GENRES.map((g, i) => [g.name, i]));
+const STORAGE_KEY = 'beat-roulette-v2';
+const SETTINGS_KEY = 'beat-roulette-settings';
+const TAB_KEY = 'beat-roulette-tab';
+const HISTORY_LIMIT = 20;
+const SPIN_MS = 4200;
+const SEGMENT_DEG = 360 / GENRES.length;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const $ = id => document.getElementById(id);
+
+// Мок-данные для лидерборда
+const MOCK_LEADERBOARD = [
+  { name: '808_god', lvl: 14, xp: 8900 },
+  { name: 'lo.fi.chill', lvl: 12, xp: 7400 },
+  { name: 'drill_hunter', lvl: 10, xp: 5200 },
+  { name: 'phonk_wolf', lvl: 9, xp: 4100 },
+  { name: 'pacif1st', lvl: 1, xp: 0, isMe: true }, // Твоя позиция
+  { name: 'samurai_beats', lvl: 7, xp: 2900 },
+  { name: 'uk_garage_king', lvl: 5, xp: 1800 },
+  { name: 'melancholy', lvl: 4, xp: 1200 }
+];
+
+const THEMES = {
+  purple:  { acc: '#a855f7', glow: 'rgba(168, 85, 247, 0.25)', bg: '#2a1745' },
+  cyan:    { acc: '#06b6d4', glow: 'rgba(6, 182, 212, 0.25)',  bg: '#11323b' },
+  rose:    { acc: '#f43f5e', glow: 'rgba(244, 63, 94, 0.25)',  bg: '#3b101e' },
+  emerald: { acc: '#10b981', glow: 'rgba(16, 185, 129, 0.25)', bg: '#0b2e1e' }
+};
+
+const svg = body => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+const ICONS = {
+  target: svg('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'),
+  refresh: svg('<path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>'),
+  music: svg('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'),
+  fire: svg('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'),
+  star: svg('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'),
+  dice: svg('<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8.5" cy="15.5" r="1.5"/><circle cx="15.5" cy="15.5" r="1.5"/>'),
+  headphones: svg('<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>'),
+  globe: svg('<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'),
+  shuffle: svg('<polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/>'),
+  palette: svg('<circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>'),
+  diamond: svg('<path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3L8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>'),
+  trophy: svg('<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>'),
+  clock: svg('<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'),
+  sun: svg('<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'),
+  coffee: svg('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'),
+  zap: svg('<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>'),
+  feather: svg('<path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/>')
+};
+
+// Количество уникальных жанров в начале списка (до первого повтора)
+function uniqueRecent(names, cap = 5) {
+  const seen = new Set();
+  for (const name of names) {
+    if (seen.has(name) || seen.size === cap) break;
+    seen.add(name);
+  }
+  return seen.size;
+}
+
+// Значок-счётчик: открыт, когда get(state) >= max
+const B = (id, icon, name, desc, xp, get, max) => ({ id, icon: ICONS[icon], name, desc, xp, get, max });
+const flag = key => s => (s.flags[key] ? 1 : 0);
+
+const BADGES = [
+  B('first_spin', 'target', 'Первый спин', 'Крутни колесо', 10, s => s.spins, 1),
+  B('first_beat', 'music', 'Первый бит', 'Сделай первый бит', 30, s => s.completions, 1),
+  B('ten_spins', 'refresh', 'Разогрев', '10 спинов', 30, s => s.spins, 10),
+  B('theme_change', 'palette', 'Стилист', 'Смени тему 1 раз', 40, s => s.themeChanges, 1),
+  B('weekend', 'sun', 'Выходной', 'Крутни в сб или вс', 40, flag('weekend'), 1),
+  B('streak3', 'fire', 'В ударе', 'Серия 3 дня', 50, s => s.streak, 3),
+  B('lucky', 'star', 'Везунчик', '3 раза подряд один жанр', 50, s => s.sameGenreStreak, 3),
+  B('five_beats', 'headphones', 'Пятерка', '5 готовых битов', 50, s => s.completions, 5),
+  B('night_owl', 'clock', 'Полуночник', 'Крутни с 00:00 до 05:00', 50, flag('night'), 1),
+  B('early_bird', 'coffee', 'Ранняя пташка', 'Крутни с 05:00 до 08:00', 50, flag('early'), 1),
+  B('twenty_five_spins', 'zap', 'Азарт', '25 спинов', 80, s => s.spins, 25),
+  B('ten_beats', 'headphones', 'Битмейкер', '10 готовых битов', 100, s => s.completions, 10),
+  B('fifty_spins', 'dice', 'Колесо-маньяк', '50 спинов', 100, s => s.spins, 50),
+  B('explorer', 'globe', 'Исследователь', `Попробуй все ${GENRES.length} жанров`, 100, s => s.genresTried.length, GENRES.length),
+  B('variety', 'shuffle', 'Разнообразие', '5 разных жанров подряд', 100, s => uniqueRecent(s.recentGenres, 5), 5),
+  B('theme_master', 'feather', 'Дизайнер', 'Смени тему 5 раз', 100, s => s.themeChanges, 5),
+  B('casual', 'music', 'Расслабленный', '10 битов в режиме Easy', 150, s => s.easyBeats, 10),
+  B('perfectionist', 'fire', 'Перфекционист', '10 битов в режиме Hard', 150, s => s.hardBeats, 10),
+  B('connoisseur', 'palette', 'Знаток', 'Готовые биты в 8 жанрах', 150, s => Object.keys(s.genresCompleted).length, 8),
+  B('twenty_five_beats', 'trophy', 'Профи', '25 готовых битов', 200, s => s.completions, 25),
+  B('streak7', 'diamond', 'Верность', 'Серия 7 дней', 200, s => s.streak, 7),
+  B('hundred_spins', 'dice', 'Сотка', '100 спинов', 200, s => s.spins, 100),
+  B('fifty_beats', 'trophy', 'Продюсер', '50 готовых битов', 300, s => s.completions, 50),
+  B('streak14', 'diamond', 'Преданный', 'Серия 14 дней', 400, s => s.streak, 14),
+  B('hundred_beats', 'target', 'Машина', '100 готовых битов', 500, s => s.completions, 100),
+  B('legend', 'star', 'Легенда', 'Достигни 10 уровня', 500, s => s.xp, 4500),
+  B('streak30', 'zap', 'Марафонец', 'Серия 30 дней', 1000, s => s.streak, 30)
+].sort((a, b) => a.xp - b.xp);
+const BADGE_BY_ID = new Map(BADGES.map(b => [b.id, b]));
+
+/* ==========================================================
+   НАСТРОЙКИ И ЗВУК
+   ========================================================== */
+let settings = { sound: true, haptics: true, difficulty: 'mix', theme: 'purple' };
+
+function applyTheme(theme) {
+  const t = THEMES[theme] || THEMES.purple;
+  const root = document.documentElement.style;
+  root.setProperty('--acc', t.acc);
+  root.setProperty('--acc-glow', t.glow);
+  root.setProperty('--bg-glow', t.bg);
+  for (const btn of themeButtons) btn.classList.toggle('active', btn.dataset.theme === theme);
+}
+
+function applyDifficulty() {
+  for (const btn of diffButtons) btn.classList.toggle('active', btn.dataset.diff === settings.difficulty);
+}
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (raw) settings = { ...settings, ...JSON.parse(raw) };
+  } catch {}
+  if (!['easy', 'mix', 'hard'].includes(settings.difficulty)) settings.difficulty = 'mix';
+  if (!THEMES[settings.theme]) settings.theme = 'purple';
+  ui.soundToggle.checked = settings.sound;
+  ui.hapticsToggle.checked = settings.haptics;
+  applyTheme(settings.theme);
+  applyDifficulty();
+}
+
+function saveSettings() {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch {}
+}
+
+let audioCtx = null;
+function audio() {
+  if (!settings.sound) return null;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!audioCtx) audioCtx = new AC();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+// Один короткий «бип»; delay — смещение в секундах (планируется самим Web Audio, без setTimeout)
+function beep(type, freq, vol, dur, delay = 0) {
+  const ac = audio(); if (!ac) return;
+  const t = ac.currentTime + delay;
+  const osc = ac.createOscillator(); const gain = ac.createGain();
+  osc.type = type; osc.frequency.setValueAtTime(freq, t);
+  gain.gain.setValueAtTime(vol, t); gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  osc.connect(gain).connect(ac.destination);
+  osc.start(t); osc.stop(t + dur);
+}
+const playTick = () => beep('triangle', 800, 0.1, 0.05);
+const playClick = () => beep('square', 400, 0.05, 0.02);
+const playWin = () => [440, 554.37, 659.25].forEach((f, i) => beep('sine', f, 0.15, 0.4, i * 0.1));
+function vibrate(pattern) { if (settings.haptics && navigator.vibrate) navigator.vibrate(pattern); }
+const feedback = (ms = 10) => { playClick(); vibrate(ms); };
+
+/* ==========================================================
+   СОСТОЯНИЕ
+   ========================================================== */
+function createState() {
+  return { xp:0, spins:0, completions:0, genresTried:[], genresCompleted:{}, streak:0, lastActiveDate:null, currentSpin:null, lastSpinGenre:null, sameGenreStreak:0, recentGenres:[], badges:{}, history:[], themeChanges:0, easyBeats:0, hardBeats:0, flags:{} };
+}
+let state = createState();
+
+const isObj = v => v !== null && typeof v === 'object' && !Array.isArray(v);
+const num = v => (Number.isFinite(v) && v >= 0 ? v : 0);
+
+// Загружаем и «чиним» сохранение, чтобы битые данные не ломали приложение
+function load() {
+  let data;
+  try { data = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch {}
+  if (!isObj(data)) return;
+  const s = { ...createState(), ...data };
+  for (const k of ['xp','spins','completions','streak','sameGenreStreak','themeChanges','easyBeats','hardBeats']) s[k] = num(s[k]);
+  for (const k of ['genresTried','recentGenres','history']) if (!Array.isArray(s[k])) s[k] = [];
+  for (const k of ['genresCompleted','badges','flags']) if (!isObj(s[k])) s[k] = {};
+  s.history = s.history.filter(h => isObj(h) && Array.isArray(h.conds)).slice(0, HISTORY_LIMIT);
+  const cs = s.currentSpin;
+  if (!isObj(cs) || !GENRE_INDEX.has(cs.genre) || !Array.isArray(cs.conds) || cs.conds.length < 2) s.currentSpin = null;
+  state = s;
+}
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch { toast('Хранилище недоступно'); }
+}
+
+const xpForLevel = lvl => 50 * lvl * (lvl - 1);
+function levelFromXp(xp) {
+  let lvl = Math.floor((1 + Math.sqrt(1 + xp / 12.5)) / 2);
+  if (xpForLevel(lvl) > xp) lvl--;
+  if (xpForLevel(lvl + 1) <= xp) lvl++;
+  return Math.max(1, lvl);
+}
+function localDateKey(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+const dayNumber = key => Date.parse(`${key}T00:00:00Z`) / 86400000;
+function touchStreak() {
+  const today = localDateKey();
+  if (state.lastActiveDate === today) return;
+  const diff = state.lastActiveDate ? dayNumber(today) - dayNumber(state.lastActiveDate) : null;
+  state.streak = diff === 1 ? state.streak + 1 : 1;
+  state.lastActiveDate = today;
+}
+// Серия для отображения: если пропущен день — показываем 0, а не устаревшее число
+function visibleStreak() {
+  if (!state.lastActiveDate) return 0;
+  return dayNumber(localDateKey()) - dayNumber(state.lastActiveDate) <= 1 ? state.streak : 0;
+}
+
+/* ==========================================================
+   UI
+   ========================================================== */
+const ui = Object.fromEntries([
+  'wheel','wheelWrap','spinBtn','result','genreName','doneBtn','finishBtn','copyBtn',
+  'historyList','badgesGrid','lvlBadge','xpBar','xpFill','xpText','statStreak','statSpins','statBeats',
+  'toast','resetBtn','badgeDialog','modalClose','modalIcon','modalName','modalDesc',
+  'modalProgressFill','modalProgressText','modalXp','tabBadgeCount','tabHistCount',
+  'soundToggle','hapticsToggle','pagination','podium','lbList','uploadDialog','uploadClose','audioFile','fileName','confirmUpload',
+  'mockTgBtn','donateBtn','difficultyControl','themeControl'
+].map(id => [id, $(id)]));
+ui.conditions = [0, 1].map(i => {
+  const button = $(`condBtn${i}`);
+  return { button, text: $(`condText${i}`), number: button.querySelector('.cond-num') };
+});
+const diffButtons = [...ui.difficultyControl.querySelectorAll('button[data-diff]')];
+const themeButtons = [...ui.themeControl.querySelectorAll('button[data-theme]')];
+const ctx = ui.wheel.getContext('2d');
+
+// Маленький помощник для создания элементов (всегда через textContent — без XSS)
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+const toastQueue = []; let toastBusy = false; let toastTimer = 0;
+function toast(message) {
+  toastQueue.push(message);
+  if (!toastBusy) nextToast();
+}
+function nextToast() {
+  if (!toastQueue.length) { toastBusy = false; return; }
+  toastBusy = true;
+  ui.toast.textContent = toastQueue.shift();
+  ui.toast.classList.add('show');
+  toastTimer = setTimeout(() => { ui.toast.classList.remove('show'); toastTimer = setTimeout(nextToast, 350); }, 2200);
+}
+
+// Проверяем значки, пока открываются новые (XP за значок может открыть «Легенду»)
+function unlockBadges() {
+  const newly = [];
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const b of BADGES) {
+      if (!state.badges[b.id] && b.get(state) >= b.max) {
+        state.badges[b.id] = true;
+        state.xp += b.xp;
+        newly.push(b);
+        changed = true;
+      }
+    }
+  }
+  return newly;
+}
+
+function award(baseXp, message) {
+  const before = levelFromXp(state.xp);
+  state.xp += baseXp;
+  const newly = unlockBadges();
+  if (!baseXp && !newly.length) { save(); return; }
+  save(); renderAll();
+  if (baseXp) toast(`+${baseXp} XP · ${message}`);
+  for (const b of newly) toast(`+${b.xp} XP · ${b.name}`);
+  const after = levelFromXp(state.xp);
+  if (after > before) toast(`Новый уровень: LVL ${after}`);
+}
+
+let lastCanvasSize = '';
+function drawWheel() {
+  if (!ctx) return;
+  const size = ui.wheelWrap.clientWidth;
+  if (!size) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const key = `${size}:${dpr}`;
+  if (key === lastCanvasSize) return;
+  lastCanvasSize = key;
+
+  const pixels = Math.round(size * dpr);
+  ui.wheel.width = ui.wheel.height = pixels;
+  ctx.setTransform(pixels / size, 0, 0, pixels / size, 0, 0);
+
+  const center = size / 2; const radius = center - 6;
+  const segment = Math.PI * 2 / GENRES.length;
+  ctx.font = `700 ${Math.max(10, size * .028)}px ui-sans-serif,system-ui,sans-serif`;
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 2;
+
+  for (let i = 0; i < GENRES.length; i++) {
+    const start = -Math.PI / 2 + i * segment;
+    ctx.beginPath(); ctx.moveTo(center, center); ctx.arc(center, center, radius, start, start + segment); ctx.closePath();
+    ctx.fillStyle = COLORS[i % COLORS.length]; ctx.fill(); ctx.stroke();
+    ctx.save(); ctx.translate(center, center); ctx.rotate(start + segment / 2);
+    ctx.fillStyle = 'rgba(255,255,255,.96)';
+    ctx.fillText(GENRES[i].name, radius - size * .07, 0, radius * .7);
+    ctx.restore();
+  }
+  ctx.beginPath(); ctx.arc(center, center, radius, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 4; ctx.stroke();
+}
+
+/* ==========================================================
+   РЕНДЕР
+   ========================================================== */
+function renderLeaderboard() {
+  const me = MOCK_LEADERBOARD.find(p => p.isMe);
+  if (me) { me.lvl = levelFromXp(state.xp); me.xp = state.xp; }
+  const sorted = [...MOCK_LEADERBOARD].sort((a, b) => b.xp - a.xp);
+  const initial = p => p.name.charAt(0).toUpperCase();
+
+  const podium = document.createDocumentFragment();
+  for (const idx of [1, 0, 2]) {
+    const p = sorted[idx]; if (!p) continue;
+    const item = el('div', `podium-item rank-${idx + 1}`);
+    item.append(el('div', 'podium-avatar', initial(p)), el('div', 'podium-name', p.name), el('div', 'podium-xp', `${p.xp} XP`), el('div', 'podium-block', String(idx + 1)));
+    podium.append(item);
+  }
+  ui.podium.replaceChildren(podium);
+
+  const list = document.createDocumentFragment();
+  sorted.slice(3).forEach((p, i) => {
+    const row = el('div', p.isMe ? 'lb-row is-me' : 'lb-row');
+    const info = el('div', 'lb-info');
+    info.append(el('div', 'lb-name', p.isMe ? `${p.name} (Ты)` : p.name), el('div', 'lb-lvl', `LVL ${p.lvl}`));
+    row.append(el('div', 'lb-rank', `#${i + 4}`), el('div', 'lb-avatar', initial(p)), info, el('div', 'lb-xp', `${p.xp} XP`));
+    list.append(row);
+  });
+  ui.lbList.replaceChildren(list);
+}
+
+let badgePage = 0;
+const BADGES_PER_PAGE = 9;
+const BADGE_PAGES = Math.ceil(BADGES.length / BADGES_PER_PAGE);
+
+function renderBadges() {
+  const unlocked = BADGES.filter(b => state.badges[b.id]).length;
+  ui.tabBadgeCount.textContent = `${unlocked}/${BADGES.length}`;
+
+  const start = badgePage * BADGES_PER_PAGE;
+  const fragment = document.createDocumentFragment();
+  for (const b of BADGES.slice(start, start + BADGES_PER_PAGE)) {
+    const got = state.badges[b.id] === true;
+    const button = el('button', `badge ${got ? 'unlocked' : 'locked'}`);
+    button.type = 'button'; button.dataset.id = b.id; button.title = b.desc;
+    const icon = el('div', 'badge-icon'); icon.innerHTML = b.icon;
+    button.append(icon, el('div', 'badge-name', b.name), el('div', 'badge-xp', got ? 'Получен' : `+${b.xp} XP`));
+    fragment.append(button);
+  }
+  ui.badgesGrid.replaceChildren(fragment);
+  renderPagination();
+}
+
+function renderPagination() {
+  if (BADGE_PAGES <= 1) { ui.pagination.replaceChildren(); return; }
+  const fragment = document.createDocumentFragment();
+  for (let i = 0; i < BADGE_PAGES; i++) {
+    const btn = el('button', i === badgePage ? 'page-btn active' : 'page-btn', String(i + 1));
+    btn.type = 'button'; btn.dataset.page = i;
+    if (i === badgePage) btn.setAttribute('aria-current', 'page');
+    fragment.append(btn);
+  }
+  ui.pagination.replaceChildren(fragment);
+}
+
+function renderHUD() {
+  const level = levelFromXp(state.xp);
+  const inLevel = state.xp - xpForLevel(level);
+  const total = xpForLevel(level + 1) - xpForLevel(level);
+  const ratio = Math.min(1, inLevel / total);
+
+  ui.lvlBadge.textContent = `LVL ${level}`;
+  ui.xpFill.style.transform = `scaleX(${ratio})`;
+  ui.xpBar.setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
+  ui.xpText.textContent = `${inLevel} / ${total} XP`;
+  ui.statStreak.textContent = visibleStreak();
+  ui.statSpins.textContent = state.spins;
+  ui.statBeats.textContent = state.completions;
+}
+
+function renderHistory() {
+  const fragment = document.createDocumentFragment();
+  if (!state.history.length) {
+    fragment.append(el('li', 'empty', 'Пока пусто — крути колесо!'));
+  } else {
+    for (const h of state.history) {
+      const li = el('li', h.completed ? 'done' : '');
+      const head = el('div', 'h-head');
+      head.append(el('b', '', h.genre));
+      if (h.completed) head.append(el('span', 'check', 'Выполнено'));
+      li.append(head);
+      h.conds.forEach((text, i) => li.append(el('div', h.completed && h.selected === i ? 'chosen' : 'condition', `${i + 1}. ${text}`)));
+      fragment.append(li);
+    }
+  }
+  ui.historyList.replaceChildren(fragment);
+  ui.tabHistCount.textContent = state.history.length;
+}
+
+function renderResult() {
+  const cs = state.currentSpin;
+  ui.result.hidden = spinning || !cs;
+  ui.spinBtn.disabled = spinning;
+  if (!cs) return;
+
+  const locked = spinning || cs.confirmed !== null || cs.done;
+  ui.genreName.textContent = cs.genre;
+  ui.conditions.forEach(({ button, text, number }, i) => {
+    const selected = cs.selected === i;
+    const confirmed = cs.confirmed === i;
+    text.textContent = cs.conds[i];
+    button.classList.toggle('selected', selected && cs.confirmed === null && !cs.done);
+    button.classList.toggle('confirmed', confirmed);
+    button.setAttribute('aria-pressed', String(selected || confirmed));
+    button.disabled = locked;
+    number.textContent = selected || confirmed ? '✓' : String(i + 1);
+  });
+
+  ui.doneBtn.hidden = cs.confirmed !== null || cs.done;
+  ui.doneBtn.disabled = spinning || cs.selected === null || cs.done;
+  ui.doneBtn.textContent = cs.selected === null ? 'Выбери условие выше' : 'Подтвердить выбор';
+
+  ui.finishBtn.hidden = cs.confirmed === null && !cs.done;
+  ui.finishBtn.disabled = spinning || cs.done;
+  ui.finishBtn.textContent = cs.done ? '✓ Бит сделан' : '🔥 Бит готов (+50 XP)';
+
+  ui.copyBtn.disabled = spinning;
+}
+
+let activeTab = 'play';
+function renderAll() {
+  renderHUD(); renderBadges(); renderHistory(); renderResult();
+  if (activeTab === 'leaderboard') renderLeaderboard(); // невидимый топ не перерисовываем
+}
+
+const tabButtons = [...document.querySelectorAll('.tab[data-tab]')];
+const tabPanels = [...document.querySelectorAll('.tab-panel[data-panel]')];
+const TAB_IDS = tabButtons.map(b => b.dataset.tab);
+tabButtons.forEach(btn => btn.setAttribute('aria-controls', `panel-${btn.dataset.tab}`));
+
+function switchTab(id, focus = false) {
+  if (!TAB_IDS.includes(id)) return;
+  activeTab = id;
+  for (const btn of tabButtons) {
+    const isActive = btn.dataset.tab === id;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', String(isActive));
+    btn.tabIndex = isActive ? 0 : -1;
+    if (isActive && focus) btn.focus();
+  }
+  for (const panel of tabPanels) panel.hidden = panel.dataset.panel !== id;
+  if (id === 'leaderboard') renderLeaderboard();
+  if (id === 'play') drawWheel(); // колесо могло быть скрыто при первом рисовании
+  try { localStorage.setItem(TAB_KEY, id); } catch {}
+}
+
+/* ==========================================================
+   ИГРА
+   ========================================================== */
+const rand = n => Math.floor(Math.random() * n);
+const pick = arr => arr[rand(arr.length)];
+// Два разных элемента без цикла «пока не совпадёт»
+function pickTwo(arr) {
+  if (arr.length < 2) return [arr[0], arr[0]];
+  const i = rand(arr.length);
+  let j = rand(arr.length - 1); if (j >= i) j++;
+  return [arr[i], arr[j]];
+}
+const modulo = val => ((val % 360) + 360) % 360;
+const restAngle = index => modulo(-(index + .5) * SEGMENT_DEG);
+
+function rollConditions(genre, diff) {
+  if (diff === 'easy') return pickTwo(genre.easy);
+  if (diff === 'hard') return pickTwo(genre.hard);
+  const first = pick(genre.easy);
+  const alternatives = genre.hard.filter(c => c !== first);
+  return [first, pick(alternatives.length ? alternatives : genre.hard)];
+}
+
+let currentRotation = 0; let spinning = false; let cancelSpin = null; let spinSequence = 0;
+function newId() { return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${++spinSequence}-${Math.random().toString(36).slice(2)}`; }
+
+// Текущий угол колеса из computed transform (для тиканья на реальных границах секторов)
+function wheelAngle() {
+  const m = getComputedStyle(ui.wheel).transform;
+  if (!m || m === 'none') return 0;
+  const [a, b] = m.slice(m.indexOf('(') + 1, -1).split(',').map(Number);
+  return modulo(Math.atan2(b, a) * 180 / Math.PI);
+}
+
+function spin() {
+  if (spinning) return;
+  audio(); vibrate(20);
+  spinning = true; renderResult();
+
+  const index = rand(GENRES.length);
+  const target = restAngle(index);
+  const finalRotation = currentRotation + (5 + rand(3)) * 360 + modulo(target - currentRotation);
+
+  let settled = false; let timer = 0; let raf = 0;
+  function cleanup() {
+    clearTimeout(timer); cancelAnimationFrame(raf);
+    ui.wheel.removeEventListener('transitionend', onEnd);
+    ui.wheel.classList.remove('spinning'); cancelSpin = null;
+  }
+  function finish() {
+    if (settled) return; settled = true; cleanup();
+    playWin(); vibrate([50, 50, 50]);
+
+    currentRotation = target;
+    ui.wheel.style.transition = 'none'; ui.wheel.style.transform = `rotate(${target}deg)`;
+
+    const genre = GENRES[index];
+    const conds = rollConditions(genre, settings.difficulty);
+    const now = new Date(); const hour = now.getHours();
+    const id = newId();
+
+    state.spins++; touchStreak();
+    if (now.getDay() === 0 || now.getDay() === 6) state.flags.weekend = true;
+    if (hour < 5) state.flags.night = true;
+    else if (hour < 8) state.flags.early = true;
+    if (!state.genresTried.includes(genre.name)) state.genresTried.push(genre.name);
+    state.sameGenreStreak = state.lastSpinGenre === genre.name ? state.sameGenreStreak + 1 : 1;
+    state.lastSpinGenre = genre.name;
+    state.recentGenres = [genre.name, ...state.recentGenres].slice(0, 5);
+
+    // Сложность запоминаем в момент спина — её нельзя «подменить» перед сдачей бита
+    state.currentSpin = { id, genre: genre.name, conds, selected: null, confirmed: null, done: false, diff: settings.difficulty };
+    state.history.unshift({ id, genre: genre.name, conds: [...conds], selected: null, completed: false, date: Date.now() });
+    state.history.length = Math.min(state.history.length, HISTORY_LIMIT);
+
+    spinning = false;
+    award(10, 'спин');
+  }
+  function onEnd(event) { if (event.target === ui.wheel && event.propertyName === 'transform') finish(); }
+  cancelSpin = () => { settled = true; cleanup(); spinning = false; ui.wheel.style.transition = 'none'; renderResult(); };
+
+  if (reducedMotion.matches) { finish(); return; }
+  ui.wheel.classList.add('spinning'); void ui.wheel.offsetWidth;
+  ui.wheel.addEventListener('transitionend', onEnd);
+  ui.wheel.style.transition = `transform ${SPIN_MS}ms cubic-bezier(.15,.72,.16,1)`;
+  ui.wheel.style.transform = `rotate(${finalRotation}deg)`;
+  timer = setTimeout(finish, SPIN_MS + 250);
+
+  // Тик, когда под стрелкой проходит граница сектора — звук совпадает с колесом
+  if (settings.sound) {
+    let lastSector = Math.floor(wheelAngle() / SEGMENT_DEG); let lastTick = 0;
+    const loop = now => {
+      if (settled) return;
+      const sector = Math.floor(wheelAngle() / SEGMENT_DEG);
+      if (sector !== lastSector && now - lastTick > 35) { playTick(); lastTick = now; }
+      lastSector = sector;
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+  }
+}
+
+function selectCondition(index) {
+  const cs = state.currentSpin;
+  if (spinning || !cs || cs.confirmed !== null || cs.done) return;
+  feedback(10);
+  cs.selected = cs.selected === index ? null : index;
+  save(); renderResult();
+}
+
+function confirmCondition() {
+  const cs = state.currentSpin;
+  if (spinning || !cs || cs.confirmed !== null || cs.done || cs.selected === null) return;
+  feedback(20);
+  cs.confirmed = cs.selected;
+  save(); renderResult();
+}
+
+const canFinish = cs => !spinning && cs && cs.confirmed !== null && !cs.done;
+const FILE_HINT = 'Нажми, чтобы выбрать MP3/WAV';
+
+function openUploadDialog() {
+  if (!canFinish(state.currentSpin)) return;
+  ui.fileName.textContent = FILE_HINT;
+  ui.confirmUpload.disabled = true;
+  ui.audioFile.value = '';
+  ui.uploadDialog.showModal();
+}
+
+function finishBeat() {
+  const cs = state.currentSpin;
+  if (!canFinish(cs)) return;
+  playWin(); vibrate([30, 30, 30]);
+
+  cs.done = true; state.completions++; touchStreak();
+  const diff = cs.diff || settings.difficulty;
+  if (diff === 'hard') state.hardBeats++;
+  else if (diff === 'easy') state.easyBeats++;
+
+  state.genresCompleted[cs.genre] = (state.genresCompleted[cs.genre] || 0) + 1;
+  const entry = state.history.find(h => h.id === cs.id);
+  if (entry) { entry.completed = true; entry.selected = cs.confirmed; }
+
+  award(50, 'бит готов!');
+}
+
+let copyTimer = 0;
+async function copyTask() {
+  const cs = state.currentSpin;
+  if (spinning || !cs) return;
+  const condIndex = cs.confirmed ?? cs.selected;
+  const text = condIndex === null ? `${cs.genre}\n1. ${cs.conds[0]}\n2. ${cs.conds[1]}` : `${cs.genre}\nУсловие: ${cs.conds[condIndex]}`;
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('API недоступен');
+    await navigator.clipboard.writeText(text);
+    clearTimeout(copyTimer); ui.copyBtn.textContent = 'Скопировано';
+    copyTimer = setTimeout(() => { ui.copyBtn.textContent = 'Скопировать задание'; }, 1500);
+  } catch { window.prompt('Скопируй вручную:', text); }
+}
+
+function openBadgeModal(badge) {
+  const got = state.badges[badge.id] === true;
+  const current = Math.min(badge.get(state), badge.max);
+  ui.modalIcon.innerHTML = badge.icon;
+  ui.modalName.textContent = badge.name;
+  ui.modalDesc.textContent = badge.desc;
+  ui.modalProgressText.textContent = got ? 'Выполнено' : `${current} / ${badge.max}`;
+  ui.modalProgressFill.style.transform = `scaleX(${got ? 1 : current / badge.max})`;
+  ui.modalProgressFill.classList.toggle('done', got);
+  ui.modalXp.textContent = `${got ? 'Получено · ' : ''}+${badge.xp} XP`;
+  ui.modalXp.classList.toggle('done', got);
+  ui.badgeDialog.showModal();
+}
+
+function resetProgress() {
+  if (!window.confirm('Сбросить весь прогресс?')) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch { toast('Браузер запретил удаление'); return; }
+  cancelSpin?.(); clearTimeout(copyTimer); clearTimeout(toastTimer);
+  toastQueue.length = 0; toastBusy = false; ui.toast.classList.remove('show');
+  ui.copyBtn.textContent = 'Скопировать задание';
+  state = createState(); currentRotation = 0; badgePage = 0;
+  ui.wheel.style.transition = 'none'; ui.wheel.style.transform = 'rotate(0deg)';
+  for (const d of [ui.badgeDialog, ui.uploadDialog]) if (d.open) d.close();
+  renderAll(); switchTab('play'); toast('Прогресс сброшен.');
+}
+
+/* ==========================================================
+   СОБЫТИЯ
+   ========================================================== */
+// Обычный click: работает с мышью, тачем и клавиатурой; не срабатывает при прокрутке пальцем
+ui.spinBtn.addEventListener('click', spin);
+ui.conditions.forEach(({ button }, i) => button.addEventListener('click', () => selectCondition(i)));
+ui.doneBtn.addEventListener('click', confirmCondition);
+ui.finishBtn.addEventListener('click', openUploadDialog);
+ui.copyBtn.addEventListener('click', copyTask);
+
+ui.tabsNav = tabButtons[0].parentElement;
+ui.tabsNav.addEventListener('click', e => {
+  const btn = e.target.closest('.tab[data-tab]');
+  if (btn) switchTab(btn.dataset.tab);
+});
+// Стрелки/Home/End по вкладкам (стандарт для role="tablist")
+ui.tabsNav.addEventListener('keydown', e => {
+  const i = TAB_IDS.indexOf(activeTab);
+  const keys = { ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1, Home: 0, End: TAB_IDS.length - 1 };
+  if (!(e.key in keys)) return;
+  e.preventDefault();
+  switchTab(TAB_IDS[(keys[e.key] + TAB_IDS.length) % TAB_IDS.length], true);
+});
+
+ui.badgesGrid.addEventListener('click', e => {
+  const badge = BADGE_BY_ID.get(e.target.closest('button[data-id]')?.dataset.id);
+  if (badge) openBadgeModal(badge);
+});
+ui.pagination.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-page]');
+  if (!btn) return;
+  badgePage = Number(btn.dataset.page); renderBadges(); feedback(10);
+});
+
+// Закрытие модалок крестиком и кликом по затемнению
+for (const [dialog, closeBtn] of [[ui.badgeDialog, ui.modalClose], [ui.uploadDialog, ui.uploadClose]]) {
+  closeBtn.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', e => {
+    if (e.target !== dialog) return;
+    const r = dialog.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close();
+  });
+}
+
+ui.audioFile.addEventListener('change', () => {
+  const file = ui.audioFile.files[0];
+  const ok = !!file && (file.type.startsWith('audio/') || /\.(mp3|wav|m4a|aac|ogg|flac)$/i.test(file.name));
+  ui.fileName.textContent = ok ? file.name : FILE_HINT;
+  ui.confirmUpload.disabled = !ok;
+  if (file && !ok) toast('Нужен аудиофайл (MP3/WAV)');
+});
+ui.confirmUpload.addEventListener('click', () => { ui.uploadDialog.close(); finishBeat(); });
+
+ui.resetBtn.addEventListener('click', resetProgress);
+ui.mockTgBtn.addEventListener('click', () => toast('Это демо-версия входа. Скоро здесь будет настоящий Telegram!'));
+// В будущем: window.open('https://www.donationalerts.com/r/pacif1st', '_blank');
+ui.donateBtn.addEventListener('click', () => toast('Скоро здесь появится ссылка на донат! ☕'));
+
+ui.soundToggle.addEventListener('change', e => {
+  settings.sound = e.target.checked; saveSettings();
+  playClick();
+});
+ui.hapticsToggle.addEventListener('change', e => {
+  settings.haptics = e.target.checked; saveSettings(); vibrate(20);
+});
+
+ui.difficultyControl.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-diff]');
+  if (!btn || btn.dataset.diff === settings.difficulty) return;
+  settings.difficulty = btn.dataset.diff;
+  applyDifficulty(); saveSettings(); playClick();
+});
+
+ui.themeControl.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-theme]');
+  if (!btn || btn.dataset.theme === settings.theme) return; // повторный клик по той же теме — не «смена»
+  settings.theme = btn.dataset.theme;
+  applyTheme(settings.theme); saveSettings(); playClick();
+  state.themeChanges++;
+  award(0);
+});
+
+if ('ResizeObserver' in window) new ResizeObserver(() => drawWheel()).observe(ui.wheelWrap);
+else window.addEventListener('resize', drawWheel, { passive: true });
+
+/* ==========================================================
+   СТАРТ
+   ========================================================== */
+loadSettings();
+load();
+
+let savedTab = 'play';
+try { savedTab = localStorage.getItem(TAB_KEY) || 'play'; } catch {}
+switchTab(TAB_IDS.includes(savedTab) ? savedTab : 'play');
+drawWheel();
+
+if (state.currentSpin) {
+  currentRotation = restAngle(GENRE_INDEX.get(state.currentSpin.genre));
+  ui.wheel.style.transform = `rotate(${currentRotation}deg)`;
+}
+renderAll();
+</script>
+</body>
+</html>
