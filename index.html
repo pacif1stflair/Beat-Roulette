@@ -298,29 +298,29 @@
     
     <button type="button" class="tg-login-btn" id="mockTgBtn">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-      Войти через Telegram
+      <span data-i18n="tg">Войти через Telegram</span>
     </button>
 
-    <section class="hud" aria-label="Прогресс">
+    <section class="hud" aria-label="Прогресс" data-i18n-aria="hud">
       <div class="hud-top">
         <span class="level-badge" id="lvlBadge">LVL 1</span>
         <div class="hud-stats">
-          <span title="Дни">🔥 <b id="statStreak">0</b></span>
-          <span title="Спины">🎰 <b id="statSpins">0</b></span>
-          <span title="Биты">🎵 <b id="statBeats">0</b></span>
+          <span title="Дни" data-i18n-title="stat.days">🔥 <b id="statStreak">0</b></span>
+          <span title="Спины" data-i18n-title="stat.spins">🎰 <b id="statSpins">0</b></span>
+          <span title="Биты" data-i18n-title="stat.beats">🎵 <b id="statBeats">0</b></span>
         </div>
       </div>
-      <div class="xp-bar" id="xpBar" role="progressbar" aria-label="Опыт" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="xp-fill" id="xpFill"></div></div>
+      <div class="xp-bar" id="xpBar" role="progressbar" aria-label="Опыт" data-i18n-aria="xp" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="xp-fill" id="xpFill"></div></div>
       <div class="xp-text" id="xpText">0 / 100 XP</div>
     </section>
 
     <nav class="tabs" role="tablist">
-      <button type="button" class="tab active" data-tab="play" id="tab-play" role="tab" aria-selected="true">🎰 Колесо</button>
-      <button type="button" class="tab" data-tab="leaderboard" id="tab-leaderboard" role="tab" aria-selected="false">🏆 Топ</button>
-      <button type="button" class="tab" data-tab="badges" id="tab-badges" role="tab" aria-selected="false">🏅 Значки <span class="tab-count" id="tabBadgeCount">0/0</span></button>
-      <button type="button" class="tab" data-tab="history" id="tab-history" role="tab" aria-selected="false">📜 История <span class="tab-count" id="tabHistCount">0</span></button>
-      <button type="button" class="tab" data-tab="about" id="tab-about" role="tab" aria-selected="false">👤 Автор</button>
-      <button type="button" class="tab" data-tab="settings" id="tab-settings" role="tab" aria-selected="false">⚙️ Параметры</button>
+      <button type="button" class="tab active" data-tab="play" id="tab-play" role="tab" aria-selected="true"><span data-i18n="tab.play">🎰 Колесо</span></button>
+      <button type="button" class="tab" data-tab="leaderboard" id="tab-leaderboard" role="tab" aria-selected="false"><span data-i18n="tab.leaderboard">🏆 Топ</span></button>
+      <button type="button" class="tab" data-tab="badges" id="tab-badges" role="tab" aria-selected="false"><span data-i18n="tab.badges">🏅 Значки</span> <span class="tab-count" id="tabBadgeCount">0/0</span></button>
+      <button type="button" class="tab" data-tab="history" id="tab-history" role="tab" aria-selected="false"><span data-i18n="tab.history">📜 История</span> <span class="tab-count" id="tabHistCount">0</span></button>
+      <button type="button" class="tab" data-tab="about" id="tab-about" role="tab" aria-selected="false"><span data-i18n="tab.about">👤 Автор</span></button>
+      <button type="button" class="tab" data-tab="settings" id="tab-settings" role="tab" aria-selected="false"><span data-i18n="tab.settings">⚙️ Параметры</span></button>
     </nav>
   </aside>
 
@@ -328,14 +328,14 @@
     <section class="tab-panel" id="panel-play" data-panel="play" role="tabpanel">
       <div class="wheel-wrap" id="wheelWrap">
         <div class="pointer" aria-hidden="true"></div>
-        <canvas id="wheel" role="img" aria-label="Колесо жанров">Нажми SPIN</canvas>
-        <button type="button" id="spinBtn" class="hub" aria-label="Крутить">SPIN</button>
+        <canvas id="wheel" role="img" aria-label="Колесо жанров" data-i18n-aria="wheel">Нажми SPIN</canvas>
+        <button type="button" id="spinBtn" class="hub" aria-label="Крутить" data-i18n-aria="spin">SPIN</button>
       </div>
 
       <section class="result" id="result" aria-labelledby="genreName" hidden>
-        <div class="label">Твой жанр</div>
+        <div class="label" data-i18n="yourGenre">Твой жанр</div>
         <h2 id="genreName">—</h2>
-        <div class="label" id="conditionLabel">Выбери условие</div>
+        <div class="label" id="conditionLabel" data-i18n="chooseCond">Выбери условие</div>
         <div class="cond-options" role="group">
           <button type="button" class="cond-btn" id="condBtn0" aria-pressed="false"><span class="cond-num">1</span><span class="cond-txt" id="condText0">—</span></button>
           <button type="button" class="cond-btn" id="condBtn1" aria-pressed="false"><span class="cond-num">2</span><span class="cond-txt" id="condText1">—</span></button>
@@ -350,8 +350,8 @@
 
     <!-- ЛИДЕРБОРД -->
     <section class="tab-panel" id="panel-leaderboard" data-panel="leaderboard" hidden>
-      <h2 class="panel-header">🏆 Топ битмейкеров</h2>
-      <p class="panel-sub">Демо-версия лидерборда</p>
+      <h2 class="panel-header" data-i18n="lb.title">🏆 Топ битмейкеров</h2>
+      <p class="panel-sub" data-i18n="lb.sub">Демо-версия лидерборда</p>
       
       <div class="leaderboard-podium" id="podium">
         <!-- Заполняется через JS -->
@@ -362,77 +362,88 @@
     </section>
 
     <section class="tab-panel" id="panel-badges" data-panel="badges" hidden>
-      <h2 class="panel-header">🏅 Все значки</h2>
-      <p class="panel-sub">Нажми на значок, чтобы увидеть прогресс</p>
+      <h2 class="panel-header" data-i18n="badges.title">🏅 Все значки</h2>
+      <p class="panel-sub" data-i18n="badges.sub">Нажми на значок, чтобы увидеть прогресс</p>
       <div class="badges-grid" id="badgesGrid"></div>
       <div class="pagination" id="pagination"></div>
     </section>
 
     <section class="tab-panel" id="panel-history" data-panel="history" hidden>
-      <h2 class="panel-header">📜 История спинов</h2>
+      <h2 class="panel-header" data-i18n="history.title">📜 История спинов</h2>
       <ul class="history-list" id="historyList"></ul>
     </section>
 
     <section class="tab-panel" id="panel-about" data-panel="about" hidden>
-      <h2 class="panel-header">👤 Об авторе</h2>
+      <h2 class="panel-header" data-i18n="about.title">👤 Об авторе</h2>
       <div class="author-card">
         <div class="author-avatar">🎧</div>
         <h3 class="author-name">pacif1st</h3>
         <div class="author-role">Beatmaker & Vibe Coder</div>
         
-        <p class="author-text">Этот проект — результат одиночного эксперимента в мире <b>вайбкодинга</b>. Один разработчик, один ИИ-ассистент и чистое желание сделать что-то крутое.</p>
+        <p class="author-text" data-i18n-html="about.p1">Этот проект — результат одиночного эксперимента в мире <b>вайбкодинга</b>. Один разработчик, один ИИ-ассистент и чистое желание сделать что-то крутое.</p>
         
-        <p class="author-text">Beat Roulette создан, чтобы <b>разнообразить написание музыки</b>. Когда замыливается глаз или заканчиваются идеи — колесо всегда придёт на помощь.</p>
+        <p class="author-text" data-i18n-html="about.p2">Beat Roulette создан, чтобы <b>разнообразить написание музыки</b>. Когда замыливается глаз или заканчиваются идеи — колесо всегда придёт на помощь.</p>
         
-        <div class="author-quote">
+        <div class="author-quote" data-i18n="about.quote">
           «Если тебе скучно — просто порандомить, что написать. Рандом решает.»
         </div>
         
         <p class="author-text" style="text-align:center; font-size:12px; margin-top:24px; margin-bottom:0;">
-          Связаться со мной: <a href="#" style="color:var(--acc); text-decoration:none;">Telegram</a> • <a href="#" style="color:var(--acc); text-decoration:none;">SoundCloud</a>
+          <span data-i18n="about.contact">Связаться со мной:</span> <a href="#" style="color:var(--acc); text-decoration:none;">Telegram</a> • <a href="#" style="color:var(--acc); text-decoration:none;">SoundCloud</a>
         </p>
 
         <!-- Кнопка доната -->
         <button type="button" class="donate-btn" id="donateBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
-          Угостить автора кофе
+          <span data-i18n="donate">Угостить автора кофе</span>
         </button>
       </div>
     </section>
 
     <section class="tab-panel" id="panel-settings" data-panel="settings" hidden>
-      <h2 class="panel-header">⚙️ Параметры</h2>
+      <h2 class="panel-header" data-i18n="settings.title">⚙️ Параметры</h2>
       <div class="result" style="padding: 10px 20px;">
         
         <div class="setting-row" style="flex-direction: column; align-items: stretch; padding-bottom: 20px;">
           <div>
-            <div class="setting-label">Режим сложности</div>
-            <div class="setting-desc">Какие условия выпадут на колесе</div>
+            <div class="setting-label">Язык / Language</div>
+            <div class="setting-desc" data-i18n="set.langDesc">Язык интерфейса и условий</div>
+          </div>
+          <div class="segmented-control" id="langControl">
+            <button type="button" data-lang="ru" class="active">Русский</button>
+            <button type="button" data-lang="en">English</button>
+          </div>
+        </div>
+
+        <div class="setting-row" style="flex-direction: column; align-items: stretch; padding-bottom: 20px;">
+          <div>
+            <div class="setting-label" data-i18n="set.diff">Режим сложности</div>
+            <div class="setting-desc" data-i18n="set.diffDesc">Какие условия выпадут на колесе</div>
           </div>
           <div class="segmented-control" id="difficultyControl">
             <button type="button" data-diff="easy">Easy</button>
-            <button type="button" data-diff="mix" class="active">Микс</button>
+            <button type="button" data-diff="mix" class="active" data-i18n="set.mix">Микс</button>
             <button type="button" data-diff="hard">Hard</button>
           </div>
         </div>
 
         <div class="setting-row" style="flex-direction: column; align-items: stretch; padding-bottom: 20px;">
           <div>
-            <div class="setting-label">Цветовой акцент</div>
-            <div class="setting-desc">Смени неоновую подсветку интерфейса и фона</div>
+            <div class="setting-label" data-i18n="set.color">Цветовой акцент</div>
+            <div class="setting-desc" data-i18n="set.colorDesc">Смени неоновую подсветку интерфейса и фона</div>
           </div>
           <div class="color-picker" id="themeControl">
-            <button type="button" class="color-dot color-purple active" data-theme="purple" aria-label="Фиолетовый"></button>
-            <button type="button" class="color-dot color-cyan" data-theme="cyan" aria-label="Бирюзовый"></button>
-            <button type="button" class="color-dot color-rose" data-theme="rose" aria-label="Розовый"></button>
-            <button type="button" class="color-dot color-emerald" data-theme="emerald" aria-label="Изумрудный"></button>
+            <button type="button" class="color-dot color-purple active" data-theme="purple" aria-label="Фиолетовый" data-i18n-aria="c.purple"></button>
+            <button type="button" class="color-dot color-cyan" data-theme="cyan" aria-label="Бирюзовый" data-i18n-aria="c.cyan"></button>
+            <button type="button" class="color-dot color-rose" data-theme="rose" aria-label="Розовый" data-i18n-aria="c.rose"></button>
+            <button type="button" class="color-dot color-emerald" data-theme="emerald" aria-label="Изумрудный" data-i18n-aria="c.emerald"></button>
           </div>
         </div>
 
         <div class="setting-row">
           <div>
-            <div class="setting-label">Звуковые эффекты</div>
-            <div class="setting-desc">Тиканье колеса и звук победы</div>
+            <div class="setting-label" data-i18n="set.sound">Звуковые эффекты</div>
+            <div class="setting-desc" data-i18n="set.soundDesc">Тиканье колеса и звук победы</div>
           </div>
           <label class="switch">
             <input type="checkbox" id="soundToggle" checked>
@@ -442,8 +453,8 @@
 
         <div class="setting-row">
           <div>
-            <div class="setting-label">Виброотклик</div>
-            <div class="setting-desc">Вибрация при кликах (только на телефонах)</div>
+            <div class="setting-label" data-i18n="set.haptics">Виброотклик</div>
+            <div class="setting-desc" data-i18n="set.hapticsDesc">Вибрация при кликах (только на телефонах)</div>
           </div>
           <label class="switch">
             <input type="checkbox" id="hapticsToggle" checked>
@@ -452,7 +463,7 @@
         </div>
       </div>
 
-      <button type="button" class="reset-button" id="resetBtn">Сбросить весь прогресс</button>
+      <button type="button" class="reset-button" id="resetBtn" data-i18n="set.reset">Сбросить весь прогресс</button>
     </section>
   </main>
 </div>
@@ -461,7 +472,7 @@
 
 <!-- Модалка Значка -->
 <dialog id="badgeDialog">
-  <button type="button" class="modal-close" id="modalClose" aria-label="Закрыть">×</button>
+  <button type="button" class="modal-close" id="modalClose" aria-label="Закрыть" data-i18n-aria="close">×</button>
   <div class="modal-icon" id="modalIcon"></div>
   <h2 class="modal-name" id="modalName"></h2>
   <p class="modal-desc" id="modalDesc"></p>
@@ -472,9 +483,9 @@
 
 <!-- Модалка Загрузки Бита -->
 <dialog id="uploadDialog">
-  <button type="button" class="modal-close" id="uploadClose" aria-label="Закрыть">×</button>
-  <h2 class="modal-name" style="margin-bottom: 12px;">Проверка бита</h2>
-  <p class="modal-desc">Чтобы получить XP и попасть в топ, прикрепи короткий отрывок (15-30 сек) своего бита.</p>
+  <button type="button" class="modal-close" id="uploadClose" aria-label="Закрыть" data-i18n-aria="close">×</button>
+  <h2 class="modal-name" style="margin-bottom: 12px;" data-i18n="up.title">Проверка бита</h2>
+  <p class="modal-desc" data-i18n="up.desc">Чтобы получить XP и попасть в топ, прикрепи короткий отрывок (15-30 сек) своего бита.</p>
   
   <label class="upload-area" for="audioFile">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
@@ -483,11 +494,11 @@
   <input type="file" id="audioFile" accept="audio/*" style="display: none;">
   
   <div class="btn-row">
-    <button type="button" class="done-btn" id="confirmUpload" disabled>Отправить на проверку</button>
+    <button type="button" class="done-btn" id="confirmUpload" disabled data-i18n="up.submit">Отправить на проверку</button>
   </div>
 </dialog>
 
-<noscript>Для работы колеса включи JavaScript.</noscript>
+<noscript>Для работы колеса включи JavaScript. / Please enable JavaScript.</noscript>
 
 <script>
 'use strict';
@@ -545,6 +556,131 @@ const GENRES = [
     easy:['Plugg-синт + R&B-аккорды','Мягкий 808 без клиппинга','Снейр с реверберацией и лёгким свингом','BPM 145–155','Аккорды с maj7 и maj9','Мечтательная мелодия на синт-пэде','Вокал-чоп с автотюном','Хэты редкие, без роллов','Гитара с хорусом','Мажорная гармония','Колокольчики сверху','Пропуск барабанов перед хуком'],
     hard:['Две разные тональности одновременно','Аккорды сыграны вживую, без квантайза','Мелодия на электрогитаре с вибрато','Только пэды и 808 — больше ничего','Голос запитчен вниз до баритона','Каждые 8 тактов новая прогрессия','Без снейра — только клэп с длинным хвостом','Аккорды с 11-й и 13-й ступенями','R&B-сэмпл 2000-х, перевёрнутый задом','Бит без хэтов совсем','Мелодия на фортепиано, как в R&B 90-х','BPM 75, но звучит как 150']}
 ];
+// Английские условия — в том же порядке, что и русские (по индексу)
+const GENRES_EN = {
+  'Trap': {
+    easy:['BPM 140, clap on beat 3 — classic half-time','Long-tail 808 is the bass — no separate bass','8th-note hats + one roll at the end of every 4th bar','Melody on a single instrument: bells or flute','Only 4 chords for the whole beat, one per bar','Kick always lands with an 808 note','Orchestral stab (brass or strings) when the hook hits','4-bar intro with no drums, then everything drops in','No more than one open hat per bar','Minor key, melody stays within one octave','Structure: intro 8 — hook 16 — verse 16 — hook 16','Producer tag in the first 4 bars'],
+    hard:['Lex Luger style: brass + strings + triplet hats, no 808 slides','Rolls only in triplets (1/12 and 1/24), no 1/32','Main melody is your own voice, pitched into an instrument','808 plays a melody: at least 5 different notes in the pattern','Hat pattern changes every 8 bars — no repeats','Beat switch halfway: new drums and a new melody','BPM 150+, but the beat has to feel calm','No snare — only a clap spread across the stereo field','Melody in major, but the beat sounds dark','Hook modulates up a half step','No more than 3 melodic tracks in the whole beat','Everything in mono except one wide element']},
+  'Drill': {
+    easy:['BPM 142, hats in a 3+3+2 pattern','808 with slides — at least 2 glides every 4 bars','Dark minor-key piano melody','Pizzicato strings as the main melody','No separate kick — only the 808 hits','4-note melody that repeats through the whole beat','Choir or vocal pad in the background','Harmonic minor: raised 7th degree in the melody','Bell as a second melody, Chicago drill style','Low-pass filter on the melody for the first 4 bars','Crash cymbal at the start of every 8-bar block','Drums: only hat, snare and rimshot'],
+    hard:['Brooklyn drill: chop of someone else’s R&B hook + distorted 808','Bronx drill: only a soul/R&B record sample, no synths','808 slides on every note — not a single note without a glide','No hat rolls at all — groove only from snare placement','Melody in major, but it sounds threatening','Chicago drill: synth brass, bells and busy snare patterns','BPM 150+, and the 808 plays only 2 notes','No piano or strings — melody only from synth or vocals','Two independent melodies, neither doubles the other','Snare pattern changes every 4th bar','Melody in 3/4 over drill drums','Beat switch on the second verse into a new key']},
+  'Boom Bap': {
+    easy:['BPM 90: kick on 1 and 3, snare on 2 and 4','55–60% swing on the hats','Built on a soul or jazz record sample','Acoustic drums only — no 808s','Shaker or tambourine in 8ths','Drums are the loudest thing in the mix','2-bar loop for the whole verse','Vinyl crackle over the sample','Scratch at the end of every 8-bar block','Bass is a sampled bass guitar or upright bass','Hook built from a vocal phrase from another track','Filter the bass out of the sample and play it separately'],
+    hard:['Chop the sample into at least 8 pieces and replay them in a new order','Unquantized finger-drummed drums, J Dilla style','SP-1200 style: sample crushed to 12-bit','Sample from a genre you never listen to','DJ Premier style: hook made only of scratched vocal phrases','All drums from a single break — no separate one-shots','BPM 80, but it has to knock like 95','Two different records in one loop, in the same key','No samples: everything is played but sounds like vinyl','A new sample chop every 4 bars','Kick and snare from the same sound, separated by pitch','Bass only on strong beats, melody only on weak beats']},
+  'Lo-Fi': {
+    easy:['BPM 75–85, swing on the drums','Seventh chords only: maj7 and m7','Vinyl crackle through the whole beat','Low-pass on the master around 8–10 kHz','Rhodes or electric piano as the main instrument','Soft kick and a brushed snare','Chords pump with sidechain from the kick','Line from an old cartoon or movie as a vocal sample','Rain or street ambience in the background','Bass is a soft sub or upright bass','Tape saturation on the master','Harmony built on a ii–V–I'],
+    hard:['Sample from an old video game soundtrack','Wow & flutter: chords drift in pitch like a cassette','Only 9th and 11th chords — no plain triads','One part recorded on your phone’s voice memo','No more than 3 tracks in the whole beat','Drums from household sounds: table, keys, mug','Melody improvised in one take, no edits','No drums: groove only from bass and chords','Key change halfway through','Chords nudged off the grid by hand, up to 30 ms','1:30 long and loops with no audible seam','BPM 70, but no gaps — the beat has to flow']},
+  'Phonk': {
+    easy:['Melody on a TR-808 cowbell','Vocal sample in the style of 90s Memphis rap','Overdriven 808','BPM 130–145','Cassette grit on the master','Triplet hats','Hard digital snare, Memphis style','Repeating vocal hook of 1–2 words','Minor key, melody of 3–4 notes','Sub bass pumping on every beat','Dark pad or choir in the background','Intro with vocals only, then a hard drop'],
+    hard:['Drift phonk: cowbell melody across 2 octaves, BPM 160+','Brazilian phonk: funk carioca rhythm + cowbell','Sample from a horror movie soundtrack','Vocal slowed and pitched down beyond recognition','Cowbell and 808 play the same notes in unison','Distortion on the whole mix, but the vocal stays clear','No cowbell at all — phonk vibe only from samples and 808','Two cowbells in call and response','Melody in major, but it sounds sinister','Cowbell changes its pattern every 8 bars','Whole beat made only of TR-808 sounds','4-bar break in the middle: only vocal and cowbell']},
+  'Detroit': {
+    easy:['BPM around 100 with a bouncy groove','Piano with a jumpy, broken melody','808 bouncing between octaves','Claps instead of a snare','Sparse hats, no rolls','2–3 note melody on repeat','Drums: only kick, clap and hat','Bass plays more notes than the melody','Dark minor harmony','Bell in the melody','Syncopated kick that avoids the strong beats','One 4-bar loop for the whole beat'],
+    hard:['Clap never lands on 2 or 4','Piano slightly detuned — crooked on purpose','Only piano and 808, nothing else','No hats at all','Melody played with mistakes — keep them','808 and piano in different rhythms','Detroit bounce in double time, BPM 190+','Old Detroit soul sample, Motown style','Every bar of the melody differs slightly from the last','No effects at all: no reverb, no delay','Cowbell and piano in unison','808 slides down at the end of every phrase']},
+  'Jersey Club': {
+    easy:['BPM 140, signature 5-kick run at the end of the bar','Bed squeak as percussion','Vocal chop repeated at least 4 times in a row','Lyn Collins “Think (About It)” break in the drums','Pop hit sample chopped into syllables','Short staccato 808 notes','Kicks in a tresillo (3+3+2)','Open hats on the offbeats','Shout or “hey!” accent every 2 bars','Melody from a single synth stab','Structure: intro — drop — break — drop','No complex chords'],
+    hard:['Remix: take an R&B track and flip it into Jersey club','All chops from your own voice','Kick pattern changes every 4 bars','No bed squeak — replace it with an everyday sound','Triplet kicks over straight hats','Vocal chop pitched to notes and played as the melody','Sample from an anime or a video game','No melody — only chops and drums','8-bar break at half tempo','No more than 3 types of SFX as percussion','A new element comes in every 8 bars','Major key, as fun and danceable as possible']},
+  'Rage': {
+    easy:['Supersaw lead, spread wide in stereo','Distorted 808','BPM 150–165','Simple, energetic trap drums','Short 2-bar synth loop','Melody in major','Straight 8th-note hats','Bells on top, Yeat style','Synths pump with sidechain from the kick','EDM pad on major chords','Reverse effect before every hook','4 bars of silence before the first drop'],
+    hard:['8-bit lead, like a video game soundtrack','EDM guitar loop replayed on a synth','808 plays the melody in unison with the lead','No more than 2 synths in the whole beat','Melody made only of 16th-note arpeggios','BPM 170+ and not a single hat roll','A new lead on every hook','Distortion on everything except the lead','Choir vocal chops with hard autotune','Minor key, but it sounds like a party','Chaotic beat with sudden stops, F1lthy style','No 808 — bass from a Reese synth']},
+  'Plugg': {
+    easy:['Almost no hats — crashes and drum skips instead','Soft, dreamy synth pad','Thick, steady 808','Accent snares on the half-beats','Swing on the drums, Zaytoven style','Only 2–3 simple chords','Catchy, repeating melody','Bells on top','BPM 140–155','No distortion at all','Melody in major','Drum skip on the last beat of the bar'],
+    hard:['Zaytoven-style piano: quick triplet runs in the melody','Whole beat built on presets from one synth','No hats at all','808 plays one note — groove only from skips','Melody with jazzy 9ths','Synth with a video game tone','Melody played live, no quantize','No snare: only kick, crash and 808','Two melodies in different octaves intertwine','Hyperplugg: pitch everything up, BPM 170','Should sound like outer space: only pads and bells','A new drum skip every 8 bars']},
+  'Hyperpop': {
+    easy:['Squeaky synth lead pitched up','Vocal chop with autotune maxed out','Metallic percussion','BPM 150–170','Overdrive on the master','Melody in the spirit of 2000s pop hits','Glitches on every transition','Beat shorter than 2 minutes','Major key and “sugary” chords','Distorted kick','Supersaw chords','100% sidechain — the beat breathes'],
+    hard:['Dariacore: sped-up, chopped sample of a famous hit','Bitcrush on everything except the kick','Tempo change halfway through','Second drop suddenly turns into DnB','Vocals only from text-to-speech (TTS)','Instruments only from household sounds','Key changes every 8 bars','A new rhythm every 4 bars','Pop-punk guitar in the hook','One bar of silence + reverse before the drop','Melody made of notification sounds','Voice pitched up to cartoon level and played as an instrument']},
+  'Afrobeats': {
+    easy:['BPM 100–110','Shaker in 16ths through the whole beat','Congas and bongos','Melody on kalimba or marimba','Highlife guitar','Kick in a 3+3+2 pattern','Soft pad on the chords','Round, soft bass','Rimshot on the syncopations','Flute in the hook','Sunny major harmony','4-bar percussion break'],
+    hard:['Amapiano insert: log drum instead of bass','Talking drum in the groove','Only live or self-recorded percussion','3 against 2 polyrhythm','Brass section in the style of Fela Kuti','Gospel choir on the hook','No synths at all','Drill hybrid: 3+3+2 hats and 808 slides','Xylophone and guitar weave their melodies together','Kick never hits on beat one','Percussion changes every 8 bars','Bass in tresillo, kick straight']},
+  'Reggaeton': {
+    easy:['BPM 90–96, classic dembow','Kick on every beat','Snare and timbal in tresillo','Latin guitar','Synth pad in minor','Bass follows the kick','4-note melody','Güiro or maracas','Brass stab in the hook','8th-note hats','Pad sidechained to the kick','Structure: intro 4 — hook 8 — verse 16'],
+    hard:['Minimal dembow, like “Te Boté”','Snare in the dembow replaced by a vocal sound','Salsa-style piano montuno','Bachata-style guitar','Perreo at 110+ BPM','All percussion only from timbales','Moombahton: 108 BPM and house synths','Dembow varies every 8 bars','Sample of a classic Jamaican riddim','No 808 — bass only from a synth','Summer vibe in major, but no guitar','4-bar break — percussion only']},
+  'Drum & Bass': {
+    easy:['BPM 174, two-step: kick on 1 and the “and” of 3, snare on 2 and 4','Detuned Reese bass','Amen break in the drums','16th-note hats','Pad on the chords','Liquid: piano and soul vocal','Simple clean sub bass','16-bar intro without bass','Reverse crash before the drop','16-bar breakdown','Ambient melody on top','Drop exactly at bar 32'],
+    hard:['Jungle: Amen chopped into 16ths and rearranged','Neurofunk: bass timbre changes every bar','Halftime: 174 BPM, but drums feel like 87','Ragga vocal sample','Two breaks layered on top of each other','Reese only — no separate sub','Second drop in a different key','Sample from a jazz record','Break pitched down 3+ semitones','A new break every 8 bars','No kicks outside the break','No key at all — textures only']},
+  'UK Garage': {
+    easy:['BPM 132, 2-step: kick skips beats','Shuffled hats','Pitched vocal chop','Organ bass','Rimshots and woodblocks','Clap on 2 and 4','R&B chords','Deep sub bass','Female vocal sample','Synth stabs on the offbeats','Swing on the percussion','Sidechained chords'],
+    hard:['Speed garage: four-on-the-floor + wobble bass','Todd Edwards style: vocal cut into dozens of tiny chops','Bass with distortion and resonance','Grime elements: square synths, 140 in half-time','No hats — groove only from percussion','Vocal chops play the chords','House piano in the hook','Bassline house: bouncy 16th-note bass','66% swing on everything','Kick pattern changes every 4th bar','Samples only, not a single synth','Male vocal pitched up into a female range']},
+  'Dark Trap': {
+    easy:['BPM 138, 808 as low and dirty as possible','Bell or choir in the melody','Straight 8th-note hats, no rolls','Dark melody in minor','Long reverb on the snare','Pad with a low filter','Overdriven 808','Whisper or breath as a vocal sample','3-note melody','8-bar intro with atmosphere only','No major chords','Muffled kick with a tail'],
+    hard:['Sample from a horror movie soundtrack','Melody on a detuned piano','Tritones in the melody','No synths — samples only','A full bar of silence before the hook','808 plays chromatic runs','Horror-style strings (clusters)','No snare — only a reversed clap','Vocal sample played backwards','Nature sounds: wind, crows','Tempo drops to 2/3 in the bridge','Melody of 2 notes a half step apart']},
+  'Pluggnb': {
+    easy:['Plugg synth + R&B chords','Soft 808 with no clipping','Snare with reverb and light swing','BPM 145–155','Chords with maj7 and maj9','Dreamy melody on a synth pad','Vocal chop with autotune','Sparse hats, no rolls','Guitar with chorus','Major-key harmony','Bells on top','Drum skip before the hook'],
+    hard:['Two different keys at the same time','Chords played live, no quantize','Electric guitar melody with vibrato','Only pads and 808 — nothing else','Voice pitched down to a baritone','A new progression every 8 bars','No snare — only a clap with a long tail','Chords with 11ths and 13ths','2000s R&B sample, reversed','No hats at all','Piano melody like 90s R&B','BPM 75, but it sounds like 150']}
+};
+
+const I18N = {
+  ru: {
+    title: 'Beat Roulette — колесо жанров',
+    tg: 'Войти через Telegram', hud: 'Прогресс', xp: 'Опыт',
+    'stat.days': 'Дни', 'stat.spins': 'Спины', 'stat.beats': 'Биты',
+    'tab.play': '🎰 Колесо', 'tab.leaderboard': '🏆 Топ', 'tab.badges': '🏅 Значки', 'tab.history': '📜 История', 'tab.about': '👤 Автор', 'tab.settings': '⚙️ Параметры',
+    wheel: 'Колесо жанров', spin: 'Крутить', yourGenre: 'Твой жанр', chooseCond: 'Выбери условие',
+    pickAbove: 'Выбери условие выше', confirm: 'Подтвердить выбор', beatReady: '🔥 Бит готов (+50 XP)', beatDone: '✓ Бит сделан',
+    copy: 'Скопировать задание', copied: 'Скопировано', copyManual: 'Скопируй вручную:', condition: 'Условие',
+    'lb.title': '🏆 Топ битмейкеров', 'lb.sub': 'Демо-версия лидерборда', you: 'Ты',
+    'badges.title': '🏅 Все значки', 'badges.sub': 'Нажми на значок, чтобы увидеть прогресс',
+    unlocked: 'Получен', received: 'Получено', done: 'Выполнено',
+    'history.title': '📜 История спинов', 'history.empty': 'Пока пусто — крути колесо!',
+    'about.title': '👤 Об авторе',
+    'about.p1': 'Этот проект — результат одиночного эксперимента в мире <b>вайбкодинга</b>. Один разработчик, один ИИ-ассистент и чистое желание сделать что-то крутое.',
+    'about.p2': 'Beat Roulette создан, чтобы <b>разнообразить написание музыки</b>. Когда замыливается глаз или заканчиваются идеи — колесо всегда придёт на помощь.',
+    'about.quote': '«Если тебе скучно — просто порандомить, что написать. Рандом решает.»',
+    'about.contact': 'Связаться со мной:', donate: 'Угостить автора кофе',
+    'settings.title': '⚙️ Параметры', 'set.langDesc': 'Язык интерфейса и условий',
+    'set.diff': 'Режим сложности', 'set.diffDesc': 'Какие условия выпадут на колесе', 'set.mix': 'Микс',
+    'set.color': 'Цветовой акцент', 'set.colorDesc': 'Смени неоновую подсветку интерфейса и фона',
+    'c.purple': 'Фиолетовый', 'c.cyan': 'Бирюзовый', 'c.rose': 'Розовый', 'c.emerald': 'Изумрудный',
+    'set.sound': 'Звуковые эффекты', 'set.soundDesc': 'Тиканье колеса и звук победы',
+    'set.haptics': 'Виброотклик', 'set.hapticsDesc': 'Вибрация при кликах (только на телефонах)',
+    'set.reset': 'Сбросить весь прогресс', resetConfirm: 'Сбросить весь прогресс?', resetDone: 'Прогресс сброшен.', resetBlocked: 'Браузер запретил удаление',
+    close: 'Закрыть', 'up.title': 'Проверка бита',
+    'up.desc': 'Чтобы получить XP и попасть в топ, прикрепи короткий отрывок (15-30 сек) своего бита.',
+    'up.hint': 'Нажми, чтобы выбрать MP3/WAV', 'up.submit': 'Отправить на проверку', 'up.bad': 'Нужен аудиофайл (MP3/WAV)',
+    'xp.spin': 'спин', 'xp.beat': 'бит готов!', levelUp: 'Новый уровень: LVL {n}',
+    storage: 'Хранилище недоступно',
+    tgDemo: 'Это демо-версия входа. Скоро здесь будет настоящий Telegram!', donateSoon: 'Скоро здесь появится ссылка на донат! ☕'
+  },
+  en: {
+    title: 'Beat Roulette — genre wheel',
+    tg: 'Log in with Telegram', hud: 'Progress', xp: 'Experience',
+    'stat.days': 'Days', 'stat.spins': 'Spins', 'stat.beats': 'Beats',
+    'tab.play': '🎰 Wheel', 'tab.leaderboard': '🏆 Top', 'tab.badges': '🏅 Badges', 'tab.history': '📜 History', 'tab.about': '👤 Author', 'tab.settings': '⚙️ Settings',
+    wheel: 'Genre wheel', spin: 'Spin', yourGenre: 'Your genre', chooseCond: 'Pick a condition',
+    pickAbove: 'Pick a condition above', confirm: 'Confirm choice', beatReady: '🔥 Beat is ready (+50 XP)', beatDone: '✓ Beat done',
+    copy: 'Copy task', copied: 'Copied', copyManual: 'Copy it manually:', condition: 'Condition',
+    'lb.title': '🏆 Top beatmakers', 'lb.sub': 'Leaderboard demo', you: 'You',
+    'badges.title': '🏅 All badges', 'badges.sub': 'Tap a badge to see your progress',
+    unlocked: 'Unlocked', received: 'Unlocked', done: 'Done',
+    'history.title': '📜 Spin history', 'history.empty': 'Nothing here yet — spin the wheel!',
+    'about.title': '👤 About the author',
+    'about.p1': 'This project is the result of a solo experiment in the world of <b>vibe coding</b>. One developer, one AI assistant and a pure desire to build something cool.',
+    'about.p2': 'Beat Roulette was made to <b>shake up the way you make music</b>. When your ears get tired or the ideas run out, the wheel always has your back.',
+    'about.quote': '“Bored? Just let the wheel pick what to make. Random rules.”',
+    'about.contact': 'Contact me:', donate: 'Buy the author a coffee',
+    'settings.title': '⚙️ Settings', 'set.langDesc': 'Interface and condition language',
+    'set.diff': 'Difficulty', 'set.diffDesc': 'Which conditions the wheel can give you', 'set.mix': 'Mix',
+    'set.color': 'Accent color', 'set.colorDesc': 'Change the neon glow of the interface and background',
+    'c.purple': 'Purple', 'c.cyan': 'Cyan', 'c.rose': 'Rose', 'c.emerald': 'Emerald',
+    'set.sound': 'Sound effects', 'set.soundDesc': 'Wheel ticks and win sound',
+    'set.haptics': 'Haptics', 'set.hapticsDesc': 'Vibration on taps (phones only)',
+    'set.reset': 'Reset all progress', resetConfirm: 'Reset all progress?', resetDone: 'Progress reset.', resetBlocked: 'The browser blocked deletion',
+    close: 'Close', 'up.title': 'Beat check',
+    'up.desc': 'To get XP and make the top, attach a short snippet (15–30 sec) of your beat.',
+    'up.hint': 'Tap to choose an MP3/WAV', 'up.submit': 'Submit for review', 'up.bad': 'Audio file needed (MP3/WAV)',
+    'xp.spin': 'spin', 'xp.beat': 'beat done!', levelUp: 'Level up: LVL {n}',
+    storage: 'Storage is unavailable',
+    tgDemo: 'This is a demo login. Real Telegram login is coming soon!', donateSoon: 'A donation link is coming soon! ☕'
+  }
+};
+const LANGS = Object.keys(I18N);
+const t = (key, vars = {}) => (I18N[settings.lang]?.[key] ?? I18N.ru[key] ?? key).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+const tx = pair => (settings.lang === 'en' ? pair[1] : pair[0]); // [ru, en] → текст на текущем языке
+// Пул условий жанра на текущем языке
+const condPool = (genreName, level) => {
+  const g = GENRES[GENRE_INDEX.get(genreName)];
+  const pool = settings.lang === 'en' ? GENRES_EN[genreName]?.[level] : null;
+  return pool && pool.length === g[level].length ? pool : g[level];
+};
 
 const COLORS = ['#7c3aed','#db2777','#ea580c','#ca8a04','#16a34a','#0891b2','#2563eb','#9333ea'];
 const GENRE_INDEX = new Map(GENRES.map((g, i) => [g.name, i]));
@@ -612,40 +748,41 @@ const B = (id, icon, name, desc, xp, get, max) => ({ id, icon: ICONS[icon], name
 const flag = key => s => (s.flags[key] ? 1 : 0);
 
 const BADGES = [
-  B('first_spin', 'target', 'Первый спин', 'Крутни колесо', 10, s => s.spins, 1),
-  B('first_beat', 'music', 'Первый бит', 'Сделай первый бит', 30, s => s.completions, 1),
-  B('ten_spins', 'refresh', 'Разогрев', '10 спинов', 30, s => s.spins, 10),
-  B('theme_change', 'palette', 'Стилист', 'Смени тему 1 раз', 40, s => s.themeChanges, 1),
-  B('weekend', 'sun', 'Выходной', 'Крутни в сб или вс', 40, flag('weekend'), 1),
-  B('streak3', 'fire', 'В ударе', 'Серия 3 дня', 50, s => s.streak, 3),
-  B('lucky', 'star', 'Везунчик', '3 раза подряд один жанр', 50, s => s.sameGenreStreak, 3),
-  B('five_beats', 'headphones', 'Пятерка', '5 готовых битов', 50, s => s.completions, 5),
-  B('night_owl', 'clock', 'Полуночник', 'Крутни с 00:00 до 05:00', 50, flag('night'), 1),
-  B('early_bird', 'coffee', 'Ранняя пташка', 'Крутни с 05:00 до 08:00', 50, flag('early'), 1),
-  B('twenty_five_spins', 'zap', 'Азарт', '25 спинов', 80, s => s.spins, 25),
-  B('ten_beats', 'headphones', 'Битмейкер', '10 готовых битов', 100, s => s.completions, 10),
-  B('fifty_spins', 'dice', 'Колесо-маньяк', '50 спинов', 100, s => s.spins, 50),
-  B('explorer', 'globe', 'Исследователь', `Попробуй все ${GENRES.length} жанров`, 100, s => s.genresTried.length, GENRES.length),
-  B('variety', 'shuffle', 'Разнообразие', '5 разных жанров подряд', 100, s => uniqueRecent(s.recentGenres, 5), 5),
-  B('theme_master', 'feather', 'Дизайнер', 'Смени тему 5 раз', 100, s => s.themeChanges, 5),
-  B('casual', 'music', 'Расслабленный', '10 битов в режиме Easy', 150, s => s.easyBeats, 10),
-  B('perfectionist', 'fire', 'Перфекционист', '10 битов в режиме Hard', 150, s => s.hardBeats, 10),
-  B('connoisseur', 'palette', 'Знаток', 'Готовые биты в 8 жанрах', 150, s => Object.keys(s.genresCompleted).length, 8),
-  B('twenty_five_beats', 'trophy', 'Профи', '25 готовых битов', 200, s => s.completions, 25),
-  B('streak7', 'diamond', 'Верность', 'Серия 7 дней', 200, s => s.streak, 7),
-  B('hundred_spins', 'dice', 'Сотка', '100 спинов', 200, s => s.spins, 100),
-  B('fifty_beats', 'trophy', 'Продюсер', '50 готовых битов', 300, s => s.completions, 50),
-  B('streak14', 'diamond', 'Преданный', 'Серия 14 дней', 400, s => s.streak, 14),
-  B('hundred_beats', 'target', 'Машина', '100 готовых битов', 500, s => s.completions, 100),
-  B('legend', 'star', 'Легенда', 'Достигни 10 уровня', 500, s => s.xp, 4500),
-  B('streak30', 'zap', 'Марафонец', 'Серия 30 дней', 1000, s => s.streak, 30)
+  B('first_spin', 'target', ['Первый спин', 'First spin'], ['Крутни колесо', 'Spin the wheel'], 10, s => s.spins, 1),
+  B('first_beat', 'music', ['Первый бит', 'First beat'], ['Сделай первый бит', 'Make your first beat'], 30, s => s.completions, 1),
+  B('ten_spins', 'refresh', ['Разогрев', 'Warm-up'], ['10 спинов', '10 spins'], 30, s => s.spins, 10),
+  B('theme_change', 'palette', ['Стилист', 'Stylist'], ['Смени тему 1 раз', 'Change the theme once'], 40, s => s.themeChanges, 1),
+  B('weekend', 'sun', ['Выходной', 'Weekend'], ['Крутни в сб или вс', 'Spin on Sat or Sun'], 40, flag('weekend'), 1),
+  B('streak3', 'fire', ['В ударе', 'On fire'], ['Серия 3 дня', '3-day streak'], 50, s => s.streak, 3),
+  B('lucky', 'star', ['Везунчик', 'Lucky'], ['3 раза подряд один жанр', 'Same genre 3 times in a row'], 50, s => s.sameGenreStreak, 3),
+  B('five_beats', 'headphones', ['Пятерка', 'High five'], ['5 готовых битов', '5 finished beats'], 50, s => s.completions, 5),
+  B('night_owl', 'clock', ['Полуночник', 'Night owl'], ['Крутни с 00:00 до 05:00', 'Spin between 00:00 and 05:00'], 50, flag('night'), 1),
+  B('early_bird', 'coffee', ['Ранняя пташка', 'Early bird'], ['Крутни с 05:00 до 08:00', 'Spin between 05:00 and 08:00'], 50, flag('early'), 1),
+  B('twenty_five_spins', 'zap', ['Азарт', 'Hooked'], ['25 спинов', '25 spins'], 80, s => s.spins, 25),
+  B('ten_beats', 'headphones', ['Битмейкер', 'Beatmaker'], ['10 готовых битов', '10 finished beats'], 100, s => s.completions, 10),
+  B('fifty_spins', 'dice', ['Колесо-маньяк', 'Wheel maniac'], ['50 спинов', '50 spins'], 100, s => s.spins, 50),
+  B('explorer', 'globe', ['Исследователь', 'Explorer'], [`Попробуй все ${GENRES.length} жанров`, `Try all ${GENRES.length} genres`], 100, s => s.genresTried.length, GENRES.length),
+  B('variety', 'shuffle', ['Разнообразие', 'Variety'], ['5 разных жанров подряд', '5 different genres in a row'], 100, s => uniqueRecent(s.recentGenres, 5), 5),
+  B('theme_master', 'feather', ['Дизайнер', 'Designer'], ['Смени тему 5 раз', 'Change the theme 5 times'], 100, s => s.themeChanges, 5),
+  B('casual', 'music', ['Расслабленный', 'Chill'], ['10 битов в режиме Easy', '10 beats on Easy'], 150, s => s.easyBeats, 10),
+  B('perfectionist', 'fire', ['Перфекционист', 'Perfectionist'], ['10 битов в режиме Hard', '10 beats on Hard'], 150, s => s.hardBeats, 10),
+  B('connoisseur', 'palette', ['Знаток', 'Connoisseur'], ['Готовые биты в 8 жанрах', 'Finished beats in 8 genres'], 150, s => Object.keys(s.genresCompleted).length, 8),
+  B('twenty_five_beats', 'trophy', ['Профи', 'Pro'], ['25 готовых битов', '25 finished beats'], 200, s => s.completions, 25),
+  B('streak7', 'diamond', ['Верность', 'Loyal'], ['Серия 7 дней', '7-day streak'], 200, s => s.streak, 7),
+  B('hundred_spins', 'dice', ['Сотка', 'Centurion'], ['100 спинов', '100 spins'], 200, s => s.spins, 100),
+  B('fifty_beats', 'trophy', ['Продюсер', 'Producer'], ['50 готовых битов', '50 finished beats'], 300, s => s.completions, 50),
+  B('streak14', 'diamond', ['Преданный', 'Devoted'], ['Серия 14 дней', '14-day streak'], 400, s => s.streak, 14),
+  B('hundred_beats', 'target', ['Машина', 'Machine'], ['100 готовых битов', '100 finished beats'], 500, s => s.completions, 100),
+  B('legend', 'star', ['Легенда', 'Legend'], ['Достигни 10 уровня', 'Reach level 10'], 500, s => s.xp, 4500),
+  B('streak30', 'zap', ['Марафонец', 'Marathoner'], ['Серия 30 дней', '30-day streak'], 1000, s => s.streak, 30)
 ].sort((a, b) => a.xp - b.xp);
 const BADGE_BY_ID = new Map(BADGES.map(b => [b.id, b]));
 
 /* ==========================================================
    НАСТРОЙКИ И ЗВУК
    ========================================================== */
-let settings = { sound: true, haptics: true, difficulty: 'mix', theme: 'purple' };
+const defaultLang = () => (/^(ru|uk|be|kk)/i.test(navigator.language || '') ? 'ru' : 'en');
+let settings = { sound: true, haptics: true, difficulty: 'mix', theme: 'purple', lang: null };
 
 function applyTheme(theme) {
   const t = THEMES[theme] || THEMES.purple;
@@ -667,10 +804,24 @@ function loadSettings() {
   } catch {}
   if (!['easy', 'mix', 'hard'].includes(settings.difficulty)) settings.difficulty = 'mix';
   if (!THEMES[settings.theme]) settings.theme = 'purple';
+  if (!LANGS.includes(settings.lang)) settings.lang = defaultLang();
   ui.soundToggle.checked = settings.sound;
   ui.hapticsToggle.checked = settings.haptics;
   applyTheme(settings.theme);
   applyDifficulty();
+}
+
+// Переводим статичный текст страницы по data-i18n-атрибутам
+function applyLanguage() {
+  document.documentElement.lang = settings.lang;
+  document.title = t('title');
+  for (const n of document.querySelectorAll('[data-i18n]')) n.textContent = t(n.dataset.i18n);
+  for (const n of document.querySelectorAll('[data-i18n-html]')) n.innerHTML = t(n.dataset.i18nHtml);
+  for (const n of document.querySelectorAll('[data-i18n-aria]')) n.setAttribute('aria-label', t(n.dataset.i18nAria));
+  for (const n of document.querySelectorAll('[data-i18n-title]')) n.title = t(n.dataset.i18nTitle);
+  for (const btn of langButtons) btn.classList.toggle('active', btn.dataset.lang === settings.lang);
+  if (!ui.uploadDialog.open) ui.fileName.textContent = t('up.hint');
+  clearTimeout(copyTimer); ui.copyBtn.textContent = t('copy');
 }
 
 function saveSettings() {
@@ -711,6 +862,11 @@ function createState() {
 let state = createState();
 
 const isObj = v => v !== null && typeof v === 'object' && !Array.isArray(v);
+// refs = [['easy', 3], ['hard', 7]] — индексы условий, чтобы текст менялся вместе с языком
+const validRefs = item => GENRE_INDEX.has(item.genre) && Array.isArray(item.refs) && item.refs.length === 2 &&
+  item.refs.every(r => Array.isArray(r) && ['easy', 'hard'].includes(r[0]) && Number.isInteger(r[1]) && r[1] >= 0 && r[1] < GENRES[GENRE_INDEX.get(item.genre)][r[0]].length);
+// Текст условия i для спина/записи истории; старые записи без refs показывают сохранённый текст
+const condText = (item, i) => (item.refs ? condPool(item.genre, item.refs[i][0])[item.refs[i][1]] : item.conds[i]);
 const num = v => (Number.isFinite(v) && v >= 0 ? v : 0);
 
 // Загружаем и «чиним» сохранение, чтобы битые данные не ломали приложение
@@ -725,11 +881,12 @@ function load() {
   s.history = s.history.filter(h => isObj(h) && Array.isArray(h.conds)).slice(0, HISTORY_LIMIT);
   const cs = s.currentSpin;
   if (!isObj(cs) || !GENRE_INDEX.has(cs.genre) || !Array.isArray(cs.conds) || cs.conds.length < 2) s.currentSpin = null;
+  for (const item of [s.currentSpin, ...s.history]) if (item && !validRefs(item)) delete item.refs;
   state = s;
 }
 function save() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  catch { toast('Хранилище недоступно'); }
+  catch { toast(t('storage')); }
 }
 
 const xpForLevel = lvl => 50 * lvl * (lvl - 1);
@@ -772,6 +929,7 @@ ui.conditions = [0, 1].map(i => {
   return { button, text: $(`condText${i}`), number: button.querySelector('.cond-num') };
 });
 const diffButtons = [...ui.difficultyControl.querySelectorAll('button[data-diff]')];
+const langButtons = [...document.querySelectorAll('#langControl button[data-lang]')];
 const themeButtons = [...ui.themeControl.querySelectorAll('button[data-theme]')];
 const ctx = ui.wheel.getContext('2d');
 
@@ -821,9 +979,9 @@ function award(baseXp, message) {
   if (!baseXp && !newly.length) { save(); return; }
   save(); renderAll();
   if (baseXp) toast(`+${baseXp} XP · ${message}`);
-  for (const b of newly) toast(`+${b.xp} XP · ${b.name}`);
+  for (const b of newly) toast(`+${b.xp} XP · ${tx(b.name)}`);
   const after = levelFromXp(state.xp);
-  if (after > before) toast(`Новый уровень: LVL ${after}`);
+  if (after > before) toast(t('levelUp', { n: after }));
 }
 
 let lastCanvasSize = '';
@@ -881,7 +1039,7 @@ function renderLeaderboard() {
   sorted.slice(3).forEach((p, i) => {
     const row = el('div', p.isMe ? 'lb-row is-me' : 'lb-row');
     const info = el('div', 'lb-info');
-    info.append(el('div', 'lb-name', p.isMe ? `${p.name} (Ты)` : p.name), el('div', 'lb-lvl', `LVL ${p.lvl}`));
+    info.append(el('div', 'lb-name', p.isMe ? `${p.name} (${t('you')})` : p.name), el('div', 'lb-lvl', `LVL ${p.lvl}`));
     row.append(el('div', 'lb-rank', `#${i + 4}`), el('div', 'lb-avatar', initial(p)), info, el('div', 'lb-xp', `${p.xp} XP`));
     list.append(row);
   });
@@ -901,9 +1059,9 @@ function renderBadges() {
   for (const b of BADGES.slice(start, start + BADGES_PER_PAGE)) {
     const got = state.badges[b.id] === true;
     const button = el('button', `badge ${got ? 'unlocked' : 'locked'}`);
-    button.type = 'button'; button.dataset.id = b.id; button.title = b.desc;
+    button.type = 'button'; button.dataset.id = b.id; button.title = tx(b.desc);
     const icon = el('div', 'badge-icon'); icon.innerHTML = b.icon;
-    button.append(icon, el('div', 'badge-name', b.name), el('div', 'badge-xp', got ? 'Получен' : `+${b.xp} XP`));
+    button.append(icon, el('div', 'badge-name', tx(b.name)), el('div', 'badge-xp', got ? t('unlocked') : `+${b.xp} XP`));
     fragment.append(button);
   }
   ui.badgesGrid.replaceChildren(fragment);
@@ -940,15 +1098,15 @@ function renderHUD() {
 function renderHistory() {
   const fragment = document.createDocumentFragment();
   if (!state.history.length) {
-    fragment.append(el('li', 'empty', 'Пока пусто — крути колесо!'));
+    fragment.append(el('li', 'empty', t('history.empty')));
   } else {
     for (const h of state.history) {
       const li = el('li', h.completed ? 'done' : '');
       const head = el('div', 'h-head');
       head.append(el('b', '', h.genre));
-      if (h.completed) head.append(el('span', 'check', 'Выполнено'));
+      if (h.completed) head.append(el('span', 'check', t('done')));
       li.append(head);
-      h.conds.forEach((text, i) => li.append(el('div', h.completed && h.selected === i ? 'chosen' : 'condition', `${i + 1}. ${text}`)));
+      h.conds.forEach((_, i) => li.append(el('div', h.completed && h.selected === i ? 'chosen' : 'condition', `${i + 1}. ${condText(h, i)}`)));
       fragment.append(li);
     }
   }
@@ -967,7 +1125,7 @@ function renderResult() {
   ui.conditions.forEach(({ button, text, number }, i) => {
     const selected = cs.selected === i;
     const confirmed = cs.confirmed === i;
-    text.textContent = cs.conds[i];
+    text.textContent = condText(cs, i);
     button.classList.toggle('selected', selected && cs.confirmed === null && !cs.done);
     button.classList.toggle('confirmed', confirmed);
     button.setAttribute('aria-pressed', String(selected || confirmed));
@@ -977,11 +1135,11 @@ function renderResult() {
 
   ui.doneBtn.hidden = cs.confirmed !== null || cs.done;
   ui.doneBtn.disabled = spinning || cs.selected === null || cs.done;
-  ui.doneBtn.textContent = cs.selected === null ? 'Выбери условие выше' : 'Подтвердить выбор';
+  ui.doneBtn.textContent = cs.selected === null ? t('pickAbove') : t('confirm');
 
   ui.finishBtn.hidden = cs.confirmed === null && !cs.done;
   ui.finishBtn.disabled = spinning || cs.done;
-  ui.finishBtn.textContent = cs.done ? '✓ Бит сделан' : '🔥 Бит готов (+50 XP)';
+  ui.finishBtn.textContent = cs.done ? t('beatDone') : t('beatReady');
 
   ui.copyBtn.disabled = spinning;
 }
@@ -1028,12 +1186,11 @@ function pickTwo(arr) {
 const modulo = val => ((val % 360) + 360) % 360;
 const restAngle = index => modulo(-(index + .5) * SEGMENT_DEG);
 
+// Возвращает ссылки на условия: [['easy', i], ['hard', j]]
 function rollConditions(genre, diff) {
-  if (diff === 'easy') return pickTwo(genre.easy);
-  if (diff === 'hard') return pickTwo(genre.hard);
-  const first = pick(genre.easy);
-  const alternatives = genre.hard.filter(c => c !== first);
-  return [first, pick(alternatives.length ? alternatives : genre.hard)];
+  const idx = level => [...genre[level].keys()];
+  if (diff === 'easy' || diff === 'hard') return pickTwo(idx(diff)).map(i => [diff, i]);
+  return [['easy', pick(idx('easy'))], ['hard', pick(idx('hard'))]];
 }
 
 let currentRotation = 0; let spinning = false; let cancelSpin = null; let spinSequence = 0;
@@ -1070,7 +1227,8 @@ function spin() {
     ui.wheel.style.transition = 'none'; ui.wheel.style.transform = `rotate(${target}deg)`;
 
     const genre = GENRES[index];
-    const conds = rollConditions(genre, settings.difficulty);
+    const refs = rollConditions(genre, settings.difficulty);
+    const conds = refs.map(([level, i]) => condPool(genre.name, level)[i]);
     const now = new Date(); const hour = now.getHours();
     const id = newId();
 
@@ -1084,12 +1242,12 @@ function spin() {
     state.recentGenres = [genre.name, ...state.recentGenres].slice(0, 5);
 
     // Сложность запоминаем в момент спина — её нельзя «подменить» перед сдачей бита
-    state.currentSpin = { id, genre: genre.name, conds, selected: null, confirmed: null, done: false, diff: settings.difficulty };
-    state.history.unshift({ id, genre: genre.name, conds: [...conds], selected: null, completed: false, date: Date.now() });
+    state.currentSpin = { id, genre: genre.name, conds, refs, selected: null, confirmed: null, done: false, diff: settings.difficulty };
+    state.history.unshift({ id, genre: genre.name, conds: [...conds], refs: refs.map(r => [...r]), selected: null, completed: false, date: Date.now() });
     state.history.length = Math.min(state.history.length, HISTORY_LIMIT);
 
     spinning = false;
-    award(10, 'спин');
+    award(10, t('xp.spin'));
   }
   function onEnd(event) { if (event.target === ui.wheel && event.propertyName === 'transform') finish(); }
   cancelSpin = () => { settled = true; cleanup(); spinning = false; ui.wheel.style.transition = 'none'; renderResult(); };
@@ -1132,11 +1290,10 @@ function confirmCondition() {
 }
 
 const canFinish = cs => !spinning && cs && cs.confirmed !== null && !cs.done;
-const FILE_HINT = 'Нажми, чтобы выбрать MP3/WAV';
 
 function openUploadDialog() {
   if (!canFinish(state.currentSpin)) return;
-  ui.fileName.textContent = FILE_HINT;
+  ui.fileName.textContent = t('up.hint');
   ui.confirmUpload.disabled = true;
   ui.audioFile.value = '';
   ui.uploadDialog.showModal();
@@ -1156,7 +1313,7 @@ function finishBeat() {
   const entry = state.history.find(h => h.id === cs.id);
   if (entry) { entry.completed = true; entry.selected = cs.confirmed; }
 
-  award(50, 'бит готов!');
+  award(50, t('xp.beat'));
 }
 
 let copyTimer = 0;
@@ -1164,39 +1321,39 @@ async function copyTask() {
   const cs = state.currentSpin;
   if (spinning || !cs) return;
   const condIndex = cs.confirmed ?? cs.selected;
-  const text = condIndex === null ? `${cs.genre}\n1. ${cs.conds[0]}\n2. ${cs.conds[1]}` : `${cs.genre}\nУсловие: ${cs.conds[condIndex]}`;
+  const text = condIndex === null ? `${cs.genre}\n1. ${condText(cs, 0)}\n2. ${condText(cs, 1)}` : `${cs.genre}\n${t('condition')}: ${condText(cs, condIndex)}`;
   try {
     if (!navigator.clipboard?.writeText) throw new Error('API недоступен');
     await navigator.clipboard.writeText(text);
-    clearTimeout(copyTimer); ui.copyBtn.textContent = 'Скопировано';
-    copyTimer = setTimeout(() => { ui.copyBtn.textContent = 'Скопировать задание'; }, 1500);
-  } catch { window.prompt('Скопируй вручную:', text); }
+    clearTimeout(copyTimer); ui.copyBtn.textContent = t('copied');
+    copyTimer = setTimeout(() => { ui.copyBtn.textContent = t('copy'); }, 1500);
+  } catch { window.prompt(t('copyManual'), text); }
 }
 
 function openBadgeModal(badge) {
   const got = state.badges[badge.id] === true;
   const current = Math.min(badge.get(state), badge.max);
   ui.modalIcon.innerHTML = badge.icon;
-  ui.modalName.textContent = badge.name;
-  ui.modalDesc.textContent = badge.desc;
-  ui.modalProgressText.textContent = got ? 'Выполнено' : `${current} / ${badge.max}`;
+  ui.modalName.textContent = tx(badge.name);
+  ui.modalDesc.textContent = tx(badge.desc);
+  ui.modalProgressText.textContent = got ? t('done') : `${current} / ${badge.max}`;
   ui.modalProgressFill.style.transform = `scaleX(${got ? 1 : current / badge.max})`;
   ui.modalProgressFill.classList.toggle('done', got);
-  ui.modalXp.textContent = `${got ? 'Получено · ' : ''}+${badge.xp} XP`;
+  ui.modalXp.textContent = `${got ? `${t('received')} · ` : ''}+${badge.xp} XP`;
   ui.modalXp.classList.toggle('done', got);
   ui.badgeDialog.showModal();
 }
 
 function resetProgress() {
-  if (!window.confirm('Сбросить весь прогресс?')) return;
-  try { localStorage.removeItem(STORAGE_KEY); } catch { toast('Браузер запретил удаление'); return; }
+  if (!window.confirm(t('resetConfirm'))) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch { toast(t('resetBlocked')); return; }
   cancelSpin?.(); clearTimeout(copyTimer); clearTimeout(toastTimer);
   toastQueue.length = 0; toastBusy = false; ui.toast.classList.remove('show');
-  ui.copyBtn.textContent = 'Скопировать задание';
+  ui.copyBtn.textContent = t('copy');
   state = createState(); currentRotation = 0; badgePage = 0;
   ui.wheel.style.transition = 'none'; ui.wheel.style.transform = 'rotate(0deg)';
   for (const d of [ui.badgeDialog, ui.uploadDialog]) if (d.open) d.close();
-  renderAll(); switchTab('play'); toast('Прогресс сброшен.');
+  renderAll(); switchTab('play'); toast(t('resetDone'));
 }
 
 /* ==========================================================
@@ -1246,16 +1403,16 @@ for (const [dialog, closeBtn] of [[ui.badgeDialog, ui.modalClose], [ui.uploadDia
 ui.audioFile.addEventListener('change', () => {
   const file = ui.audioFile.files[0];
   const ok = !!file && (file.type.startsWith('audio/') || /\.(mp3|wav|m4a|aac|ogg|flac)$/i.test(file.name));
-  ui.fileName.textContent = ok ? file.name : FILE_HINT;
+  ui.fileName.textContent = ok ? file.name : t('up.hint');
   ui.confirmUpload.disabled = !ok;
-  if (file && !ok) toast('Нужен аудиофайл (MP3/WAV)');
+  if (file && !ok) toast(t('up.bad'));
 });
 ui.confirmUpload.addEventListener('click', () => { ui.uploadDialog.close(); finishBeat(); });
 
 ui.resetBtn.addEventListener('click', resetProgress);
-ui.mockTgBtn.addEventListener('click', () => toast('Это демо-версия входа. Скоро здесь будет настоящий Telegram!'));
+ui.mockTgBtn.addEventListener('click', () => toast(t('tgDemo')));
 // В будущем: window.open('https://www.donationalerts.com/r/pacif1st', '_blank');
-ui.donateBtn.addEventListener('click', () => toast('Скоро здесь появится ссылка на донат! ☕'));
+ui.donateBtn.addEventListener('click', () => toast(t('donateSoon')));
 
 ui.soundToggle.addEventListener('change', e => {
   settings.sound = e.target.checked; saveSettings();
@@ -1270,6 +1427,13 @@ ui.difficultyControl.addEventListener('click', e => {
   if (!btn || btn.dataset.diff === settings.difficulty) return;
   settings.difficulty = btn.dataset.diff;
   applyDifficulty(); saveSettings(); playClick();
+});
+
+$('langControl').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-lang]');
+  if (!btn || btn.dataset.lang === settings.lang) return;
+  settings.lang = btn.dataset.lang;
+  saveSettings(); applyLanguage(); renderAll(); playClick();
 });
 
 ui.themeControl.addEventListener('click', e => {
@@ -1289,6 +1453,7 @@ else window.addEventListener('resize', drawWheel, { passive: true });
    ========================================================== */
 loadSettings();
 load();
+applyLanguage();
 
 let savedTab = 'play';
 try { savedTab = localStorage.getItem(TAB_KEY) || 'play'; } catch {}
